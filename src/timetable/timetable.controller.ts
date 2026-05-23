@@ -29,7 +29,15 @@ export class TimetableController {
   }
 
   @Post(':id/approve')
-  approveTimetable(@Param('id') id: string, @Body() body: { approverId: string }) {
-    return this.timetableService.approveTimetable(id, body.approverId);
+  approveTimetable(
+    @Param('id') id: string,
+    @Body() body: { approverId: string; role?: 'PC' | 'HOP' }
+  ) {
+    return this.timetableService.approveTimetable(id, body.approverId, body.role);
+  }
+
+  @Post('validate-credits/:semesterId')
+  validateSemesterCredits(@Param('semesterId') semesterId: string) {
+    return this.timetableService.validateSemesterCreditLimits(semesterId);
   }
 }
