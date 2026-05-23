@@ -179,13 +179,12 @@ export class CourseService {
     return { hasCycle: false, cyclePath: [] };
   }
 
-  async getPrerequisiteGraph(courseId: string, visited: Set<string> = new Set(), path: string[] = []): Promise<any> {
-    if (visited.has(courseId)) {
+  async getPrerequisiteGraph(courseId: string, path: string[] = []): Promise<any> {
+    if (path.includes(courseId)) {
       return { cycle: true, courseId, path: [...path, courseId] };
     }
 
-    visited.add(courseId);
-    path.push(courseId);
+    const newPath = [...path, courseId];
 
     const course = await this.prisma.course.findUnique({
       where: { id: courseId },
@@ -198,12 +197,11 @@ export class CourseService {
 
     const prereqNodes = await Promise.all(
       course.prerequisites.map(prereq =>
-        this.getPrerequisiteGraph(prereq.prerequisiteCourseId, visited, path)
+        this.getPrerequisiteGraph(prereq.prerequisiteCourseId, newPath)
       )
     );
 
     const hasCycle = prereqNodes.some((n: any) => n.cycle);
-    path.pop();
 
     return {
       courseId,
