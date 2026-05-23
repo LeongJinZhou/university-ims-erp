@@ -67,17 +67,17 @@ async function main() {
   const bcs = await prisma.programme.findUnique({ where: { code: 'BCS' } });
   if (bcs) {
     const courses = [
-      { code: 'COMP101', name: 'Introduction to Programming', credits: 3 },
-      { code: 'COMP102', name: 'Data Structures', credits: 3 },
-      { code: 'COMP201', name: 'Database Systems', credits: 3 },
-      { code: 'COMP202', name: 'Object Oriented Programming', credits: 3 },
-      { code: 'MATH101', name: 'Calculus I', credits: 3 },
-      { code: 'MATH102', name: 'Statistics', credits: 3 },
-      { code: 'ENGL101', name: 'Academic Writing', credits: 2 },
+      { code: 'COMP101', name: 'Introduction to Programming', creditHours: 3 },
+      { code: 'COMP102', name: 'Data Structures', creditHours: 3 },
+      { code: 'COMP201', name: 'Database Systems', creditHours: 3 },
+      { code: 'COMP202', name: 'Object Oriented Programming', creditHours: 3 },
+      { code: 'MATH101', name: 'Calculus I', creditHours: 3 },
+      { code: 'MATH102', name: 'Statistics', creditHours: 3 },
+      { code: 'ENGL101', name: 'Academic Writing', creditHours: 2 },
     ];
     for (const course of courses) {
       await prisma.course.create({
-        data: { ...course, programmeId: bcs.id },
+        data: { ...course, programmeId: bcs.id, courseType: 'THEORY' },
       });
     }
 
