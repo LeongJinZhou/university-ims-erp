@@ -10,6 +10,7 @@ dist/
 .claude/
 QIU-IMS_Blueprint.docx
 *.docx
+CLAUDE.md
 
 # plans and progress files
 docs/
