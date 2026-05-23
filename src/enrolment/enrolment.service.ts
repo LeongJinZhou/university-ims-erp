@@ -297,7 +297,6 @@ export class EnrolmentService {
   async processDropRequest(dropRequestId: string, action: 'APPROVE' | 'REJECT'): Promise<any> {
     const request = await this.prisma.dropRequest.findUnique({
       where: { id: dropRequestId },
-      include: { enrolment: true },
     });
 
     if (!request) {
@@ -315,9 +314,9 @@ export class EnrolmentService {
       data: { status },
     });
 
-    if (action === 'APPROVE' && request.enrolment) {
+    if (action === 'APPROVE') {
       await this.prisma.enrolment.update({
-        where: { id: request.enrolment.id },
+        where: { id: request.enrolmentId },
         data: { isDropped: true, droppedAt: new Date() },
       });
     }
