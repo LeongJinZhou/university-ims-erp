@@ -4,7 +4,7 @@ import { CreateVenueDto } from './dto/create-venue.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { CreateRoomBookingDto } from './dto/create-room-booking.dto';
 
-interface ReplacementSlot {
+export interface ReplacementSlot {
   slotId?: string;
   roomId: string;
   venueId: string;
