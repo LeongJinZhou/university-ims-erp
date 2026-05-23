@@ -57,6 +57,8 @@ describe('CourseService', () => {
     });
 
     it('should return no cycle for linear prerequisite chain', async () => {
+      mockPrismaService.course.findUnique.mockReset();
+
       const courseA = { id: 'course-a', code: 'COMP101', name: 'Intro to Programming', prerequisites: [{ prerequisiteCourseId: 'course-b' }] };
       const courseB = { id: 'course-b', code: 'COMP102', name: 'Data Structures', prerequisites: [] };
 
