@@ -105,7 +105,7 @@ export class ExamService {
       currentSemester: number;
       intakeAnchor: string;
       programme: { maxDurationSemesters: number };
-      academicPlan?: { semesters: { semesterNumber: number; calendarSemester: string; plannedCourses: { isDeferred: boolean }[] }[] };
+      academicPlan?: { semesters: { semesterNumber: number; calendarSemester: string; plannedCourses: { courseId: string; isDeferred: boolean }[] }[] };
     },
     retakePlanId: string,
     failedCourses: { courseId: string; courseCode: string; creditHours: number; failedSemester: string }[],
@@ -121,9 +121,11 @@ export class ExamService {
       const semInfo = this.calculateNextSemester(student.intakeAnchor, currentSemester);
       const semLabel = this.getSemesterLabel(semInfo.year, semInfo.month);
 
-      const deferredFromPlan = student.academicPlan?.semesters
-        ?.find((s) => s.semesterNumber === currentSemester)?.plannedCourses.filter((pc) => pc.isDeferred)
-        .map((pc) => pc.courseId) || [];
+      const deferredFromPlan =
+        student.academicPlan?.semesters
+          ?.find((s) => s.semesterNumber === currentSemester)
+          ?.plannedCourses.filter((pc) => pc.isDeferred)
+          .map((pc) => pc.courseId) || [];
 
       const retakableCourses = remainingFailed.filter((fc) => fc.creditHours <= availableCredits);
       const toRetake = retakableCourses.slice(0, 4);
