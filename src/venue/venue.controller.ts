@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
-import { VenueService } from './venue.service';
+import { VenueService, ReplacementSlot } from './venue.service';
 import { CreateVenueDto } from './dto/create-venue.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { CreateRoomBookingDto } from './dto/create-room-booking.dto';
