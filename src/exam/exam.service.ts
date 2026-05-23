@@ -79,7 +79,17 @@ export class ExamService {
       },
     });
 
-    await this.cascadeRetakes(student, retakePlan.id, failedCourses);
+    await this.cascadeRetakes(
+      {
+        id: student.id,
+        currentSemester: student.currentSemester,
+        intakeAnchor: student.intakeAnchor,
+        programme: { maxDurationSemesters: student.programme.maxDurationSemesters },
+        academicPlan: student.academicPlan as any,
+      },
+      retakePlan.id,
+      failedCourses,
+    );
 
     return retakePlan;
   }
