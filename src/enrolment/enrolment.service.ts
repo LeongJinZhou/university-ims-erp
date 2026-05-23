@@ -140,7 +140,7 @@ export class EnrolmentService {
 
     const existingEnrolments = await this.prisma.enrolment.findMany({
       where: { studentId, isDropped: false },
-      include: { courseOffering: { include: { timetableSlots: true } } },
+      include: { courseOffering: { include: { timetableSlots: true, course: true } } },
     });
 
     for (const enrolment of existingEnrolments) {
