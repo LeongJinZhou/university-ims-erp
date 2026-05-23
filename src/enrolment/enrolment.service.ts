@@ -20,21 +20,6 @@ export interface AiImpactPreview {
   recommendation: 'PROCEED' | 'CAUTION' | 'BLOCK';
   calculatedAt: Date;
 }
-  courseCode: string;
-  courseName: string;
-  semester: string;
-  status: 'BLOCKED' | 'AT_RISK' | 'CLEAR';
-  reason: string;
-}
-
-interface AiImpactPreview {
-  totalCreditsAfter: number;
-  creditCapExceeded: boolean;
-  maxAllowedCredits: number;
-  prerequisiteImpacts: PrerequisiteImpact[];
-  recommendation: 'PROCEED' | 'CAUTION' | 'BLOCK';
-  calculatedAt: Date;
-}
 
 @Injectable()
 export class EnrolmentService {
