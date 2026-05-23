@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { CreatePrerequisiteDto } from './dto/create-prerequisite.dto';
@@ -9,6 +9,23 @@ export class CourseService {
   constructor(private prisma: PrismaService) {}
 
   async createCourse(dto: CreateCourseDto) {
+    const programme = await this.prisma.programme.findUnique({
+      where: { id: dto.programmeId },
+    });
+
+    if (!programme) {
+      throw new NotFoundException('Programme not found');
+    }
+
+    if (programme.calendarType === 'STANDARD') {
+      const maxCredits = 20;
+      if (dto.creditHours > maxCredits) {
+        throw new BadRequestException(
+          `Course credit hours (${dto.creditHours}) exceed standard semester maximum (${maxCredits})`
+        );
+      }
+    }
+
     return this.prisma.course.create({
       data: {
         ...dto,
@@ -42,6 +59,17 @@ export class CourseService {
   }
 
   async createPrerequisite(dto: CreatePrerequisiteDto) {
+    const existing = await this.prisma.prerequisite.findFirst({
+      where: {
+        courseId: dto.courseId,
+        prerequisiteCourseId: dto.prerequisiteCourseId,
+      },
+    });
+
+    if (existing) {
+      throw new ConflictException('Prerequisite already defined for this course');
+    }
+
     return this.prisma.prerequisite.create({
       data: {
         ...dto,
@@ -57,12 +85,19 @@ export class CourseService {
   }
 
   async createEquivalency(dto: CreateEquivalencyDto) {
-    return this.prisma.courseEquivalency.create({
-      data: {
-        ...dto,
-        isDeliveryMerge: dto.isDeliveryMerge ?? true,
-      },
-    });
+    try {
+      return await this.prisma.courseEquivalency.create({
+        data: {
+          ...dto,
+          isDeliveryMerge: dto.isDeliveryMerge ?? true,
+        },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Equivalency already defined between these courses');
+      }
+      throw error;
+    }
   }
 
   async removeEquivalency(courseAId: string, courseBId: string) {
@@ -86,7 +121,18 @@ export class CourseService {
     }));
   }
 
-  async verifyPrerequisites(courseId: string, completedCourseIds: string[]): Promise<{ eligible: boolean; missing: string[] }> {
+  async verifyPrerequisites(
+    courseId: string,
+    completedCourseIds: string[],
+    checkCycles: boolean = true
+  ): Promise<{ eligible: boolean; missing: string[]; cycles?: string[] }> {
+    if (checkCycles) {
+      const { hasCycle, cyclePath } = await this.detectPrerequisiteCycle(courseId);
+      if (hasCycle) {
+        return { eligible: false, missing: [], cycles: cyclePath };
+      }
+    }
+
     const course = await this.prisma.course.findUnique({
       where: { id: courseId },
       include: { prerequisites: true },
@@ -106,9 +152,38 @@ export class CourseService {
     };
   }
 
+  async detectPrerequisiteCycle(courseId: string, visited: Set<string> = new Set(), path: string[] = []): Promise<{ hasCycle: boolean; cyclePath: string[] }> {
+    if (visited.has(courseId)) {
+      const cycleStart = path.indexOf(courseId);
+      return { hasCycle: true, cyclePath: [...path.slice(cycleStart), courseId] };
+    }
+
+    visited.add(courseId);
+    path.push(courseId);
+
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+      include: { prerequisites: true },
+    });
+
+    if (!course) {
+      return { hasCycle: false, cyclePath: [] };
+    }
+
+    for (const prereq of course.prerequisites) {
+      const result = await this.detectPrerequisiteCycle(prereq.prerequisiteCourseId, visited, path);
+      if (result.hasCycle) {
+        return result;
+      }
+    }
+
+    path.pop();
+    return { hasCycle: false, cyclePath: [] };
+  }
+
   async getPrerequisiteGraph(courseId: string, visited: Set<string> = new Set(), path: string[] = []): Promise<any> {
     if (visited.has(courseId)) {
-      return { cycle: true, path: [...path, courseId] };
+      return { cycle: true, courseId, path: [...path, courseId] };
     }
 
     visited.add(courseId);
@@ -125,15 +200,19 @@ export class CourseService {
 
     const prereqNodes = await Promise.all(
       course.prerequisites.map(prereq =>
-        this.getPrerequisiteGraph(prereq.prerequisiteCourseId, new Set(visited), [...path])
+        this.getPrerequisiteGraph(prereq.prerequisiteCourseId, visited, path)
       )
     );
+
+    const hasCycle = prereqNodes.some((n: any) => n.cycle);
+    path.pop();
 
     return {
       courseId,
       code: course.code,
       name: course.name,
       prerequisites: prereqNodes,
+      hasCycle,
     };
   }
 
