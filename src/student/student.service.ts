@@ -128,7 +128,7 @@ export class StudentService {
       })),
     }));
 
-    const atRiskFlags = await this.detectAtRisk(student);
+    const atRiskFlags = await this.detectAtRisk(student.id);
 
     return {
       studentId: student.studentId,
