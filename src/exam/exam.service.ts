@@ -51,7 +51,7 @@ export class ExamService {
             },
           },
         },
-        programme: { include: { maxDurationSemesters: true } },
+        programme: true,
       },
     });
 
