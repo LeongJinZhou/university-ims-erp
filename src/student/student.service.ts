@@ -59,10 +59,6 @@ export class StudentService {
     return `${intakeYear}${intakePeriod.charAt(0)}${intakePeriod.charAt(1)}${intakePeriod.charAt(2)}`;
   }
 
-@Injectable()
-export class StudentService {
-  constructor(private prisma: PrismaService) {}
-
   async createStudent(dto: CreateStudentDto) {
     const [user, programme, programmeVersion] = await Promise.all([
       this.prisma.user.findUnique({ where: { id: dto.userId } }),
@@ -197,7 +193,6 @@ export class StudentService {
 
     const flags: AtRiskFlag[] = [];
 
-    const currentEnrolments = student.enrolments.filter(e => !e.isDropped);
     const totalCredits = await this.calculateCurrentSemesterCredits(student.id);
 
     if (totalCredits < 12) {
@@ -262,7 +257,6 @@ export class StudentService {
     const currentMonth = ((intakeMonth - 1 + semesterOffset * 4) % 12) + 1;
     const semesterType = this.getSemesterType(`${student.intakeAnchor.substring(0, 4)}${String(currentMonth).padStart(2, '0')}`);
     return this.getMaxCredits(semesterType);
-  }
   }
 
   private async calculateCurrentSemesterCredits(studentId: string): Promise<number> {
