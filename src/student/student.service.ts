@@ -79,7 +79,7 @@ export class StudentService {
       throw new NotFoundException('Programme version not found');
     }
 
-    const intakeAnchor = `${dto.intakeYear}${dto.intakePeriod.charAt(0)}${dto.intakePeriod.charAt(1)}${dto.intakePeriod.charAt(2)}`;
+    const intakeAnchor = this.validateIntakeAnchor(dto.intakeYear, dto.intakePeriod);
 
     return this.prisma.student.create({
       data: {
