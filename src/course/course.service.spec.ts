@@ -61,8 +61,8 @@ describe('CourseService', () => {
       const courseB = { id: 'course-b', code: 'COMP102', name: 'Data Structures', prerequisites: [] };
 
       mockPrismaService.course.findUnique
-        .mockImplementationOnce(() => Promise.resolve(courseA))
-        .mockImplementationOnce(() => Promise.resolve(courseB));
+        .mockResolvedValueOnce(courseA)
+        .mockResolvedValueOnce(courseB);
 
       const result = await service.detectPrerequisiteCycle('course-a');
 
