@@ -9,7 +9,7 @@ import { EnrolmentModule } from './enrolment/enrolment.module';
 import { PrismaService } from './prisma/prisma.service';
 
 @Module({
-  imports: [ProgrammeModule, CourseModule, TimetableModule, VenueModule, StudentModule, ExamModule, EnrolmentModule],
+  imports: [ProgrammeModule, CourseModule, TimetableModule, VenueModule, StudentModule, ExamModule, EnrolmentModule, HrModule],
   providers: [PrismaService],
 })
 export class AppModule {}
