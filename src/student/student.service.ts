@@ -137,20 +137,27 @@ export class StudentService {
       throw new NotFoundException('Academic plan not found for student');
     }
 
-    const semesters = student.academicPlan.semesters.map((sp) => ({
-      semesterNumber: sp.semesterNumber,
-      calendarSemester: sp.calendarSemester,
-      totalCredits: sp.totalCredits,
-      courses: sp.plannedCourses.map((pc) => ({
-        courseId: pc.courseId,
-        courseCode: pc.courseCode,
-        courseName: '',
-        creditHours: pc.creditHours,
-        isRetake: pc.isRetake,
-        isDeferred: pc.isDeferred,
-        gradeStatus: pc.gradeStatus || undefined,
-      })),
-    }));
+    const semesters = student.academicPlan.semesters.map((sp) => {
+      const semesterType = this.getSemesterType(sp.calendarSemester);
+      const maxCredits = this.getMaxCredits(semesterType);
+      const exceedingCredits = sp.totalCredits > maxCredits;
+
+      return {
+        semesterNumber: sp.semesterNumber,
+        calendarSemester: sp.calendarSemester,
+        totalCredits: sp.totalCredits,
+        courses: sp.plannedCourses.map((pc) => ({
+          courseId: pc.courseId,
+          courseCode: pc.courseCode,
+          courseName: '',
+          creditHours: pc.creditHours,
+          isRetake: pc.isRetake,
+          isDeferred: pc.isDeferred,
+          gradeStatus: pc.gradeStatus || undefined,
+        })),
+        ...(exceedingCredits && { creditLimitWarning: `Exceeds ${maxCredits} credit limit for ${semesterType.toLowerCase()} semester` }),
+      };
+    });
 
     const atRiskFlags = await this.detectAtRisk(student.id);
 
