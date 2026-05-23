@@ -229,7 +229,32 @@ export class StudentService {
       });
     }
 
+    const maxCredits = this.calculateMaxCreditsForCurrentSemester(student);
+    if (totalCredits > maxCredits) {
+      const semesterType = maxCredits === 20 ? 'long' : 'short';
+      flags.push({
+        type: 'EXCEEDS_MAX_CREDITS',
+        severity: 'HIGH',
+        message: `Current semester credits (${totalCredits}) exceed maximum for ${semesterType} semester (${maxCredits})`,
+      });
+    }
+
     return flags;
+  }
+
+  private calculateMaxCreditsForCurrentSemester(student: {
+    intakeAnchor: string;
+    currentSemester: number;
+    academicPlan?: {
+      semesters: { calendarSemester: string; totalCredits: number }[];
+    };
+  }): number {
+    const intakeMonth = parseInt(student.intakeAnchor.substring(4, 6));
+    const semesterOffset = student.currentSemester - 1;
+    const currentMonth = ((intakeMonth - 1 + semesterOffset * 4) % 12) + 1;
+    const semesterType = this.getSemesterType(`${student.intakeAnchor.substring(0, 4)}${String(currentMonth).padStart(2, '0')}`);
+    return this.getMaxCredits(semesterType);
+  }
   }
 
   private async calculateCurrentSemesterCredits(studentId: string): Promise<number> {
