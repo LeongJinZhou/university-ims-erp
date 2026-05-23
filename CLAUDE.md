@@ -13,6 +13,8 @@ description: Unyielding academic constraints and design system tokens for QIU-IM
 ## 🎨 UI/UX & Component Styling Standards
 - [cite_start]**Web Interface Stack:** React 18 (Vite), Tailwind CSS, and layout components from shadcn/ui[cite: 203].
 - [cite_start]**Mobile Interface Stack:** React Native (Expo) with NativeWind for design token consistency[cite: 205].
+- [cite_start]**Interactive- **Diff Management:** Use specific file-patching tools instead of overwriting massive entire source files repeatedly.
+
 - [cite_start]**Interactive Views:** Use FullCalendar for interactive timetable grids, Recharts for cohort performance analytics, and React-Konva/Leaflet for rendering interactive campus floor plans[cite: 203].
 - [cite_start]**Mandatory UI States:** Every screen must implement responsive dashboard layout views, explicit skeleton loading states for asynchronous data fetching, validation error handling utilizing Zod schemas, and a functional dark-mode configuration[cite: 203].
 
