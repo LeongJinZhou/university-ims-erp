@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateSemesterDto } from './dto/create-semester.dto';
 import { CreateCourseOfferingDto } from './dto/create-course-offering.dto';
 import { CreateTimetableSlotDto } from './dto/create-timetable-slot.dto';
+import { ApprovalState, SemesterType } from '@prisma/client';
 
 @Injectable()
 export class TimetableService {
@@ -150,27 +151,74 @@ export class TimetableService {
     });
   }
 
-  async approveTimetable(timetableId: string, approverId: string): Promise<any> {
+  async approveTimetable(
+    timetableId: string,
+    approverId: string,
+    role: 'PC' | 'HOP' = 'PC',
+  ): Promise<any> {
     const timetable = await this.prisma.timetable.findUnique({
       where: { id: timetableId },
-      include: { slots: true },
     });
 
     if (!timetable) {
       throw new BadRequestException('Timetable not found');
     }
 
-    if (timetable.approvalState === 'APPROVED') {
+    const current = timetable.approvalState;
+
+    if (current === 'APPROVED') {
       return timetable;
+    }
+
+    let next: ApprovalState;
+
+    if (current === 'DRAFT' && role === 'PC') {
+      next = 'PENDING_PC';
+    } else if (current === 'PENDING_PC' && role === 'HOP') {
+      next = 'PENDING_HOP';
+    } else if (current === 'PENDING_HOP' && role === 'HOP') {
+      next = 'APPROVED';
+    } else {
+      throw new BadRequestException(
+        `Invalid approval transition from ${current} for role ${role}`
+      );
     }
 
     return this.prisma.timetable.update({
       where: { id: timetableId },
       data: {
-        approvalState: 'PENDING_PC',
+        approvalState: next,
         approvedBy: approverId,
         approvedAt: new Date(),
       },
     });
+  }
+
+  async validateSemesterCreditLimits(semesterId: string): Promise<void> {
+    const semester = await this.prisma.semester.findUnique({
+      where: { id: semesterId },
+    });
+
+    if (!semester) {
+      throw new BadRequestException('Semester not found');
+    }
+
+    const maxCredits = semester.semesterType === SemesterType.LONG ? 20 : 10;
+
+    const offerings = await this.prisma.courseOffering.findMany({
+      where: { semesterId, isConfirmed: true },
+      include: { course: true },
+    });
+
+    const totalCredits = offerings.reduce(
+      (sum, o) => sum + (o.course?.creditHours ?? 0),
+      0
+    );
+
+    if (totalCredits > maxCredits) {
+      throw new ConflictException(
+        `Total credits (${totalCredits}) exceed semester limit (${maxCredits})`
+      );
+    }
   }
 }
