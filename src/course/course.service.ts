@@ -152,14 +152,13 @@ export class CourseService {
     };
   }
 
-  async detectPrerequisiteCycle(courseId: string, visited: Set<string> = new Set(), path: string[] = []): Promise<{ hasCycle: boolean; cyclePath: string[] }> {
-    if (visited.has(courseId)) {
+  async detectPrerequisiteCycle(courseId: string, path: string[] = []): Promise<{ hasCycle: boolean; cyclePath: string[] }> {
+    if (path.includes(courseId)) {
       const cycleStart = path.indexOf(courseId);
       return { hasCycle: true, cyclePath: [...path.slice(cycleStart), courseId] };
     }
 
-    visited.add(courseId);
-    path.push(courseId);
+    const newPath = [...path, courseId];
 
     const course = await this.prisma.course.findUnique({
       where: { id: courseId },
@@ -171,13 +170,12 @@ export class CourseService {
     }
 
     for (const prereq of course.prerequisites) {
-      const result = await this.detectPrerequisiteCycle(prereq.prerequisiteCourseId, visited, path);
+      const result = await this.detectPrerequisiteCycle(prereq.prerequisiteCourseId, newPath);
       if (result.hasCycle) {
         return result;
       }
     }
 
-    path.pop();
     return { hasCycle: false, cyclePath: [] };
   }
 
