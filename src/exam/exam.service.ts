@@ -137,12 +137,23 @@ export class ExamService {
           ?.plannedCourses.filter((pc) => pc.isDeferred)
           .map((pc) => pc.courseId) || [];
 
-      const retakableCourses = remainingFailed.filter((fc) => fc.creditHours <= availableCredits);
-      const toRetake = retakableCourses.slice(0, 4);
+      const retakableCourses = remainingFailed.filter((fc) => fc.creditHours <= semInfo.maxCredits);
+      let toRetake: typeof retakableCourses = [];
+      let totalRetakeCredits = 0;
+
+      for (const fc of retakableCourses) {
+        if (totalRetakeCredits + fc.creditHours <= semInfo.maxCredits) {
+          toRetake.push(fc);
+          totalRetakeCredits += fc.creditHours;
+        } else {
+          break;
+        }
+      }
+
       remainingFailed = remainingFailed.filter((fc) => !toRetake.includes(fc));
 
       if (toRetake.length > 0 || deferredFromPlan.length > 0) {
-        let totalCredits = toRetake.reduce((sum, c) => sum + c.creditHours, 0);
+        let totalCredits = totalRetakeCredits;
         let deferredCourses: string[] = [];
 
         if (deferredFromPlan.length > 0) {
