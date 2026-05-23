@@ -16,6 +16,7 @@ export interface SemesterPlanView {
   calendarSemester: string;
   totalCredits: number;
   courses: CoursePlanView[];
+  creditLimitWarning?: string;
 }
 
 export interface CoursePlanView {
