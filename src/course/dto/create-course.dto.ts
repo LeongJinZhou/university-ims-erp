@@ -1,14 +1,18 @@
-import { IsString, IsNumber, IsEnum, IsOptional, IsBoolean } from 'class-validator';
+import { IsString, IsNumber, IsEnum, IsOptional, IsBoolean, Min, Max, IsNotEmpty } from 'class-validator';
 import { CourseType } from '@prisma/client';
 
 export class CreateCourseDto {
   @IsString()
+  @IsNotEmpty()
   code: string;
 
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @IsNumber()
+  @Min(1)
+  @Max(10)
   creditHours: number;
 
   @IsEnum(CourseType)
