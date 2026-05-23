@@ -29,10 +29,34 @@ export interface CoursePlanView {
 }
 
 export interface AtRiskFlag {
-  type: 'LOW_CREDITS' | 'HIGH_DROP_RATE' | 'GPA_DECLINE' | 'EXTENSION_RISK';
+  type: 'LOW_CREDITS' | 'HIGH_DROP_RATE' | 'GPA_DECLINE' | 'EXTENSION_RISK' | 'EXCEEDS_MAX_CREDITS';
   severity: 'LOW' | 'MEDIUM' | 'HIGH';
   message: string;
 }
+
+type SemesterType = 'LONG' | 'SHORT';
+
+@Injectable()
+export class StudentService {
+  constructor(private prisma: PrismaService) {}
+
+  private getSemesterType(calendarSemester: string): SemesterType {
+    const month = parseInt(calendarSemester.substring(4, 6));
+    if (month >= 11 || month <= 4) return 'LONG';
+    return 'SHORT';
+  }
+
+  private getMaxCredits(semesterType: SemesterType): number {
+    return semesterType === 'LONG' ? 20 : 10;
+  }
+
+  private validateIntakeAnchor(intakeYear: number, intakePeriod: 'APRIL' | 'JULY' | 'OCTOBER'): string {
+    const validPeriods = ['APRIL', 'JULY', 'OCTOBER'];
+    if (!validPeriods.includes(intakePeriod)) {
+      throw new BadRequestException(`Invalid intake period: ${intakePeriod}. Must be one of ${validPeriods.join(', ')}`);
+    }
+    return `${intakeYear}${intakePeriod.charAt(0)}${intakePeriod.charAt(1)}${intakePeriod.charAt(2)}`;
+  }
 
 @Injectable()
 export class StudentService {
