@@ -216,7 +216,7 @@ export class EnrolmentService {
 
     const futureEnrolments = await this.prisma.enrolment.findMany({
       where: { studentId, isDropped: false },
-      include: { courseOffering: { include: { course: { include: { prerequisites: true } } } } },
+      include: { courseOffering: { include: { course: { include: { prerequisites: true } }, semester: true } } },
     });
 
     const studentResults = await this.prisma.examResult.findMany({
@@ -224,7 +224,7 @@ export class EnrolmentService {
     });
 
     const passedCourses = new Set(
-      studentResults.filter((r) => r.gradeStatus === 'PASS').map((r) => r.course.code)
+      studentResults.filter((r) => r.gradeStatus === 'PASS').map((r) => r.courseId)
     );
 
     for (const enrol of futureEnrolments) {
@@ -233,7 +233,7 @@ export class EnrolmentService {
 
       for (const prereq of course.prerequisites) {
         if (prereq.prerequisiteCourseId === enrolment.courseOffering?.courseId) {
-          const status = passedCourses.has(course.code) ? 'CLEAR' :
+          const status = passedCourses.has(course.id) ? 'CLEAR' :
                         await this.checkAlternativePath(studentId, prereq.prerequisiteCourseId) ? 'CLEAR' : 'AT_RISK';
 
           impacts.push({
