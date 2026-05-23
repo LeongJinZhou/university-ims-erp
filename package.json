@@ -1,26 +1,35 @@
 {
-  "name": "qiu-ims-erp",
+  "name": "university-ims-erp",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "University IMS core ERP backend",
+  "main": "dist/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:prod": "node dist/main",
+    "prisma:generate": "prisma generate",
+    "prisma:seed": "prisma db seed"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@nestjs/common": "^11.1.23",
     "@nestjs/core": "^11.1.23",
     "@nestjs/graphql": "^13.4.2",
+    "@nestjs/platform-express": "^11.1.23",
     "@prisma/client": "^7.8.0",
+    "csv-parser": "^3.2.1",
     "fastify": "^5.8.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/schematics": "^11.0.0",
     "@types/node": "^25.9.1",
     "prisma": "^7.8.0",
+    "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }
 }

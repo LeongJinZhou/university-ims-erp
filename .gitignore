@@ -1,5 +1,22 @@
-node_modules
-# Keep environment variables out of version control
+node_modules/
+dist/
 .env
+.env.*
 
-/generated/prisma
+# Generated files
+/generated/prisma/
+
+# sensitive data and claude code
+.claude/
+QIU-IMS_Blueprint.docx
+*.docx
+
+# plans and progress files
+docs/
+.planning/
+task.md
+implementation_plan.md
+walkthrough.md
+
+# System files
+.DS_Store
