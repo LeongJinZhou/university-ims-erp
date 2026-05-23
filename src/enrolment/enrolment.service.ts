@@ -4,7 +4,22 @@ import { EnrolCourseDto } from './dto/enrol-course.dto';
 import { CreateDropRequestDto } from './dto/create-drop-request.dto';
 import { SemesterType } from '@prisma/client';
 
-interface PrerequisiteImpact {
+export interface PrerequisiteImpact {
+  courseCode: string;
+  courseName: string;
+  semester: string;
+  status: 'BLOCKED' | 'AT_RISK' | 'CLEAR';
+  reason: string;
+}
+
+export interface AiImpactPreview {
+  totalCreditsAfter: number;
+  creditCapExceeded: boolean;
+  maxAllowedCredits: number;
+  prerequisiteImpacts: PrerequisiteImpact[];
+  recommendation: 'PROCEED' | 'CAUTION' | 'BLOCK';
+  calculatedAt: Date;
+}
   courseCode: string;
   courseName: string;
   semester: string;
