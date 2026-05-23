@@ -176,7 +176,7 @@ export class ExamService {
       availableCredits = semInfo.maxCredits;
       currentSemester++;
 
-      if (currentSemester > student.programme.maxDurationSemesters + 2) {
+      if (currentSemester > student.programme.maxDurationSemesters) {
         await this.createExtensionSemester(retakePlanId, remainingFailed, currentSemester, semInfo);
         break;
       }
