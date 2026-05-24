@@ -33,8 +33,8 @@ export const courseApi = {
 }
 
 export const venueApi = {
-  getAll: () => request('/venues'),
-  create: (data: any) => post('/venues', data),
+  getAll: () => request('/venue/venues'),
+  create: (data: any) => post('/venue/venues', data),
 }
 
 export const examApi = {
