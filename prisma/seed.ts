@@ -194,10 +194,10 @@ async function main() {
 
   // Seed Sections
   const sec1 = await prisma.section.create({
-    data: { courseOfferingId: offering1.id, sectionCode: 'L1', currentSize: 10 }
+    data: { courseOfferingId: offering1.id, sectionCode: 'L1', combinedHeadcount: 10 }
   });
   const sec2 = await prisma.section.create({
-    data: { courseOfferingId: offering2.id, sectionCode: 'L1', currentSize: 0 }
+    data: { courseOfferingId: offering2.id, sectionCode: 'L1', combinedHeadcount: 0 }
   });
 
   // 8. Seed Venues
