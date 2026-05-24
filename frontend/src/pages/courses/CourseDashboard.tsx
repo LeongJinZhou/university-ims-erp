@@ -26,9 +26,6 @@ export function CourseDashboard() {
     reset()
   }
 
-  if (isLoading) return <CourseSkeleton />
-  if (error) return <div className="p-6 text-red-600">Error loading courses</div>
-
   return (
     <div className="space-y-6">
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
