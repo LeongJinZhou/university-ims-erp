@@ -28,7 +28,8 @@ async function main() {
   await prisma.roomBooking.deleteMany({});
   await prisma.room.deleteMany({});
   await prisma.venue.deleteMany({});
-  
+
+  await prisma.section.deleteMany({});
   await prisma.courseOffering.deleteMany({});
   await prisma.semester.deleteMany({});
   await prisma.prerequisite.deleteMany({});
