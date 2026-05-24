@@ -7,7 +7,7 @@ export class NotificationController {
   constructor(private notificationService: NotificationService) {}
 
   @Get()
-  async getUserNotifications(@Query('userId') userId: string, @Query('unreadOnly') unreadOnly?: boolean) {
+  async getUserNotifications(@Query('userId') userId: string, @Query('unreadOnly') unreadOnly?: string) {
     return this.notificationService.getUserNotifications(userId, unreadOnly === 'true');
   }
 
