@@ -93,7 +93,7 @@ async function main() {
     { name: 'Bachelor of Information Systems', code: 'BIS', faculty: fict, credits: 120, maxSem: 6, dept: 'DCS' },
     { name: 'Bachelor of Psychology', code: 'BPSY', faculty: fass, credits: 120, maxSem: 6, dept: 'PSY' },
     { name: 'Bachelor of Sociology', code: 'BSOC', faculty: fass, credits: 120, maxSem: 6, dept: 'PSY' },
-    { name: 'Bachelor of Communication Studies', code: 'BCS', faculty: fass, credits: 120, maxSem: 6, dept: 'PSY' },
+    { name: 'Bachelor of Communication Studies', code: 'BCOMM', faculty: fass, credits: 120, maxSem: 6, dept: 'PSY' },
     { name: 'Bachelor of International Relations', code: 'BIR', faculty: fass, credits: 120, maxSem: 6, dept: 'PSY' },
     { name: 'Bachelor of English Literature', code: 'BEL', faculty: fass, credits: 120, maxSem: 6, dept: 'PSY' },
     { name: 'Bachelor of Mass Communication', code: 'BMC', faculty: fass, credits: 120, maxSem: 6, dept: 'PSY' },
