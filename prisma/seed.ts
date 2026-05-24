@@ -13,6 +13,7 @@ async function main() {
   await prisma.payment.deleteMany({});
   await prisma.invoice.deleteMany({});
   await prisma.feeStructure.deleteMany({});
+  await prisma.notification.deleteMany({});
   await prisma.appeal.deleteMany({});
   await prisma.dropRequest.deleteMany({});
   await prisma.enrolment.deleteMany({});
