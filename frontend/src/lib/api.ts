@@ -43,8 +43,8 @@ export const examApi = {
 }
 
 export const enrolmentApi = {
-  getAll: () => request('/enrolments'),
-  create: (data: any) => post('/enrolments', data),
+  getAll: () => request('/enrolment/enrolments'),
+  create: (data: any) => post('/enrolment/enrol', data),
 }
 
 export const hrApi = {
