@@ -33,13 +33,15 @@ async function main() {
   await prisma.mqaPlanCourse.deleteMany({});
   await prisma.mqaSemesterPlan.deleteMany({});
   await prisma.programmeVersion.deleteMany({});
+  
   await prisma.course.deleteMany({});
   await prisma.programme.deleteMany({});
-  await prisma.department.deleteMany({});
-  await prisma.faculty.deleteMany({});
   
   await prisma.lecturerAvailability.deleteMany({});
   await prisma.lecturer.deleteMany({});
+  
+  await prisma.department.deleteMany({});
+  await prisma.faculty.deleteMany({});
   await prisma.user.deleteMany({});
 
   console.log('🌱 Starting DB Seeding...');
