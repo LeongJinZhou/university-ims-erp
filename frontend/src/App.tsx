@@ -6,6 +6,12 @@ import { Departments } from './pages/programmes/Departments'
 import { StudentDashboard } from './pages/students/StudentDashboard'
 import { CourseDashboard } from './pages/courses/CourseDashboard'
 import { TimetableDashboard } from './pages/timetable/TimetableDashboard'
+import { VenueDashboard } from './pages/venues/VenueDashboard'
+import { ExamDashboard } from './pages/exams/ExamDashboard'
+import { EnrolmentDashboard } from './pages/enrolment/EnrolmentDashboard'
+import { HrDashboard } from './pages/hr/HrDashboard'
+import { FinanceDashboard } from './pages/finance/FinanceDashboard'
+import { NotificationDashboard } from './pages/notifications/NotificationDashboard'
 
 function App() {
   return (
@@ -21,6 +27,12 @@ function App() {
             <Route path="/students" element={<StudentDashboard />} />
             <Route path="/courses" element={<CourseDashboard />} />
             <Route path="/timetable" element={<TimetableDashboard />} />
+            <Route path="/venues" element={<VenueDashboard />} />
+            <Route path="/exams" element={<ExamDashboard />} />
+            <Route path="/enrolment" element={<EnrolmentDashboard />} />
+            <Route path="/hr" element={<HrDashboard />} />
+            <Route path="/finance" element={<FinanceDashboard />} />
+            <Route path="/notifications" element={<NotificationDashboard />} />
           </Routes>
         </main>
       </div>
