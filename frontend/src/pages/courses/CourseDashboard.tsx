@@ -5,7 +5,6 @@ import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
-import { courseApi } from '../../lib/api'
 
 const courseSchema = z.object({
   code: z.string().min(1, 'Course code is required'),
