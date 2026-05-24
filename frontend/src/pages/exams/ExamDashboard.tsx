@@ -48,76 +48,78 @@ export function ExamDashboard() {
   }
 
   if (isLoading) return <ExamSkeleton />
-  if (error) return <div>Error loading exams</div>
+  if (error) return <div className="p-6 text-red-600">Error loading exams</div>
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Exam & Results</h1>
-        <p className="text-muted-foreground">Exam scheduling and grade management</p>
+    <div className="space-y-6">
+      <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Exam & Results</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Exam scheduling and grade management</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Schedule Exam</CardTitle>
-          <CardDescription>Create new exam slot</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Schedule Exam</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Create new exam slot</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div>
-              <Select onValueChange={(v) => setValue('courseId', v)}>
-                <SelectTrigger><SelectValue placeholder="Course" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CS101">CS101</SelectItem>
-                  <SelectItem value="CS201">CS201</SelectItem>
-                  <SelectItem value="MATH101">MATH101</SelectItem>
-                </SelectContent>
-              </Select>
+        <CardContent className="pt-0">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Select onValueChange={(v) => setValue('courseId', v)}>
+                  <SelectTrigger className="h-10"><SelectValue placeholder="Course" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="CS101">CS101</SelectItem>
+                    <SelectItem value="CS201">CS201</SelectItem>
+                    <SelectItem value="MATH101">MATH101</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input type="date" className="h-10" {...register('date')} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input type="number" placeholder="Duration (min)" className="h-10" {...register('duration', { valueAsNumber: true })} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Select onValueChange={(v) => setValue('venueId', v)}>
+                  <SelectTrigger className="h-10"><SelectValue placeholder="Venue" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LT101">LT101</SelectItem>
+                    <SelectItem value="LT102">LT102</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Input type="date" {...register('date')} />
-            </div>
-            <div>
-              <Input type="number" placeholder="Duration (min)" {...register('duration', { valueAsNumber: true })} />
-            </div>
-            <div>
-              <Select onValueChange={(v) => setValue('venueId', v)}>
-                <SelectTrigger><SelectValue placeholder="Venue" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="LT101">LT101</SelectItem>
-                  <SelectItem value="LT102">LT102</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="submit" className="md:col-span-2 lg:col-span-5">Schedule Exam</Button>
+            <Button type="submit" className="w-fit px-6">Schedule Exam</Button>
           </form>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Exam Schedule</CardTitle>
-          <CardDescription>Total: {exams?.length || 0} exams</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Exam Schedule</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Total: {exams?.length || 0} exams</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Course</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Venue</TableHead>
-                <TableHead>Status</TableHead>
+              <TableRow className="border-slate-200 dark:border-slate-800">
+                <TableHead className="font-semibold">Course</TableHead>
+                <TableHead className="font-semibold">Date</TableHead>
+                <TableHead className="font-semibold">Duration</TableHead>
+                <TableHead className="font-semibold">Venue</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {exams?.map(e => (
-                <TableRow key={e.id}>
-                  <TableCell>{e.course}</TableCell>
-                  <TableCell>{e.date}</TableCell>
-                  <TableCell>{e.duration} min</TableCell>
-                  <TableCell>{e.venue}</TableCell>
-                  <TableCell><Badge variant={e.status === 'COMPLETED' ? 'secondary' : 'default'}>{e.status}</Badge></TableCell>
+              {exams?.map((e: Exam) => (
+                <TableRow key={e.id} className="border-slate-200 dark:border-slate-800">
+                  <TableCell className="text-slate-900 dark:text-slate-100">{e.course}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{e.date}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{e.duration} min</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{e.venue}</TableCell>
+                  <TableCell><Badge variant={e.status === 'COMPLETED' ? 'secondary' : 'default'} className="text-xs">{e.status}</Badge></TableCell>
                 </TableRow>
               ))}
             </TableBody>
