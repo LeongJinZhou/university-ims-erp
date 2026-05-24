@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { financeApi } from '../../lib/api'
 
 const feeSchema = z.object({
   studentId: z.string().min(1, 'Student is required'),
@@ -19,18 +20,21 @@ const feeSchema = z.object({
 
 type FeeForm = z.infer<typeof feeSchema>
 
-const mockFees = [
-  { id: '1', student: 'U2025001', amount: 2500, semester: 'S1-2025', status: 'PAID', dueDate: '2024-11-01' },
-  { id: '2', student: 'U2025002', amount: 2500, semester: 'S1-2025', status: 'PENDING', dueDate: '2024-11-01' },
-  { id: '3', student: 'U2025003', amount: 2000, semester: 'S1-2025', status: 'OVERDUE', dueDate: '2024-10-01' },
-]
+type Fee = {
+  id: string
+  student: string
+  amount: number
+  semester: string
+  status: string
+  dueDate: string
+}
 
 export function FinanceDashboard() {
   const { data: fees, isLoading, error } = useQuery({
     queryKey: ['fees'],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 500))
-      return mockFees
+      const { data } = await financeApi.getAll()
+      return data
     },
   })
 
