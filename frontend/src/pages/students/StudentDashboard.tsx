@@ -51,81 +51,87 @@ export function StudentDashboard() {
   }
 
   if (isLoading) return <StudentSkeleton />
-  if (error) return <div>Error loading students</div>
+  if (error) return <div className="p-6 text-red-600">Error loading students</div>
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Student Academic Profiles</h1>
-        <p className="text-muted-foreground">Early at-risk detection based on GPA and credit patterns</p>
+    <div className="space-y-6">
+      <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Student Academic Profiles</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Early at-risk detection based on GPA and credit patterns</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Register New Student</CardTitle>
-          <CardDescription>Add student to academic tracking system</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Register New Student</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Add student to academic tracking system</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div>
-              <Input placeholder="Student ID" {...register('studentId')} />
-              {errors.studentId && <p className="text-sm text-red-500">{errors.studentId.message}</p>}
+        <CardContent className="pt-0">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Input placeholder="Student ID" className="h-10" {...register('studentId')} />
+                {errors.studentId && <p className="text-xs text-red-600">{errors.studentId.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input placeholder="Full Name" className="h-10" {...register('name')} />
+                {errors.name && <p className="text-xs text-red-600">{errors.name.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input placeholder="Programme ID" className="h-10" {...register('programmeId')} />
+                {errors.programmeId && <p className="text-xs text-red-600">{errors.programmeId.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Select onValueChange={(v) => setValue('intakePeriod', v)}>
+                  <SelectTrigger className="h-10"><SelectValue placeholder="Intake Period" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="APRIL">April</SelectItem>
+                    <SelectItem value="JULY">July</SelectItem>
+                    <SelectItem value="OCTOBER">October</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input type="number" placeholder="Intake Year" className="h-10" {...register('intakeYear', { valueAsNumber: true })} />
+                {errors.intakeYear && <p className="text-xs text-red-600">{errors.intakeYear.message}</p>}
+              </div>
             </div>
-            <div>
-              <Input placeholder="Full Name" {...register('name')} />
-              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-            </div>
-            <div>
-              <Input placeholder="Programme ID" {...register('programmeId')} />
-              {errors.programmeId && <p className="text-sm text-red-500">{errors.programmeId.message}</p>}
-            </div>
-            <div>
-              <Select onValueChange={(v) => setValue('intakePeriod', v)}>
-                <SelectTrigger><SelectValue placeholder="Intake Period" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="APRIL">April</SelectItem>
-                  <SelectItem value="JULY">July</SelectItem>
-                  <SelectItem value="OCTOBER">October</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Input type="number" placeholder="Intake Year" {...register('intakeYear', { valueAsNumber: true })} />
-              {errors.intakeYear && <p className="text-sm text-red-500">{errors.intakeYear.message}</p>}
-            </div>
-            <Button type="submit" className="md:col-span-2 lg:col-span-5">Register Student</Button>
+            <Button type="submit" className="w-fit px-6">Register Student</Button>
           </form>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Student List</CardTitle>
-          <CardDescription>Total: {students?.length || 0} students • At-risk: {students?.filter(s => s.status !== 'ON_TRACK').length || 0}</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Student List</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Total: {students?.length || 0} students • At-risk: {students?.filter((s: Student) => s.status !== 'ON_TRACK').length || 0}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Student ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Programme</TableHead>
-                <TableHead>Credits</TableHead>
-                <TableHead>GPA</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Semester</TableHead>
+              <TableRow className="border-slate-200 dark:border-slate-800">
+                <TableHead className="font-semibold">Student ID</TableHead>
+                <TableHead className="font-semibold">Name</TableHead>
+                <TableHead className="font-semibold">Programme</TableHead>
+                <TableHead className="font-semibold">Credits</TableHead>
+                <TableHead className="font-semibold">GPA</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
+                <TableHead className="font-semibold">Semester</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {students?.map(s => (
-                <TableRow key={s.id}>
-                  <TableCell className="font-medium">{s.studentId}</TableCell>
-                  <TableCell>{s.name}</TableCell>
-                  <TableCell>{s.programme}</TableCell>
-                  <TableCell>{s.credits}</TableCell>
-                  <TableCell>{s.gpa.toFixed(2)}</TableCell>
-                  <TableCell><Badge variant={s.status === 'ON_TRACK' ? 'default' : 'destructive'}>{s.status.replace('_', ' ')}</Badge></TableCell>
-                  <TableCell>{s.semester}</TableCell>
+              {students?.map((s: Student) => (
+                <TableRow key={s.id} className="border-slate-200 dark:border-slate-800">
+                  <TableCell className="font-medium text-slate-900 dark:text-slate-100">{s.studentId}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{s.name}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{s.programme}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{s.credits}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{s.gpa.toFixed(2)}</TableCell>
+                  <TableCell>
+                    <Badge variant={s.status === 'ON_TRACK' ? 'default' : 'destructive'} className="text-xs">
+                      {s.status.replace('_', ' ')}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{s.semester}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
