@@ -36,7 +36,7 @@ export function TimetableDashboard() {
     },
   })
 
-  const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm<SlotForm>({
+  const { register, handleSubmit, reset, setValue } = useForm<SlotForm>({
     resolver: zodResolver(slotSchema),
   })
 
