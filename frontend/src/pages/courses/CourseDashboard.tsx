@@ -1,11 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Skeleton } from '../../components/ui/skeleton'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
 import { courseApi } from '../../lib/api'
@@ -20,14 +17,6 @@ const courseSchema = z.object({
 type CourseForm = z.infer<typeof courseSchema>
 
 export function CourseDashboard() {
-  const { data: courses, isLoading, error } = useQuery({
-    queryKey: ['courses'],
-    queryFn: async () => {
-      const { data } = await courseApi.getAll()
-      return data
-    },
-  })
-
   const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm<CourseForm>({
     resolver: zodResolver(courseSchema),
   })
