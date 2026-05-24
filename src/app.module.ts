@@ -6,6 +6,7 @@ import { VenueModule } from './venue/venue.module';
 import { StudentModule } from './student/student.module';
 import { ExamModule } from './exam/exam.module';
 import { EnrolmentModule } from './enrolment/enrolment.module';
+import { HrModule } from './hr/hr.module';
 import { PrismaService } from './prisma/prisma.service';
 
 @Module({
