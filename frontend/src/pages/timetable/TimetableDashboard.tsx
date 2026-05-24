@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
-import { courseApi, venueApi } from '../../lib/api'
+import { courseApi } from '../../lib/api'
 
 const slotSchema = z.object({
   courseId: z.string().min(1, 'Course is required'),
