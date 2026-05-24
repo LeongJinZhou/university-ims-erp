@@ -8,12 +8,14 @@ import { ExamModule } from './exam/exam.module';
 import { EnrolmentModule } from './enrolment/enrolment.module';
 import { HrModule } from './hr/hr.module';
 import { FinanceModule } from './finance/finance.module';
+import { NotificationModule } from './notification/notification.module';
 import { PrismaService } from './prisma/prisma.service';
 
 @Module({
   imports: [
     ProgrammeModule, CourseModule, TimetableModule, VenueModule,
     StudentModule, ExamModule, EnrolmentModule, HrModule, FinanceModule,
+    NotificationModule,
   ],
   providers: [PrismaService],
 })
