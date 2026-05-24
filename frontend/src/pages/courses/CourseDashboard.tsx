@@ -69,13 +69,3 @@ export function CourseDashboard() {
     </div>
   )
 }
-
-function CourseSkeleton() {
-  return (
-    <div className="space-y-6">
-      <Skeleton className="h-9 w-80" />
-      <Skeleton className="h-5 w-96" />
-      <Skeleton className="h-64 w-full" />
-    </div>
-  )
-}
