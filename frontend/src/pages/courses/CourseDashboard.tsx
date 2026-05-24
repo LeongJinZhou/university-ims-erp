@@ -95,6 +95,59 @@ export function CourseDashboard() {
           </form>
         </CardContent>
       </Card>
+
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Course Catalog</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Total: {courses?.length || 0} courses</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 max-h-96 overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-slate-200 dark:border-slate-800">
+                  <TableHead className="font-semibold">Code</TableHead>
+                  <TableHead className="font-semibold">Name</TableHead>
+                  <TableHead className="font-semibold">Credits</TableHead>
+                  <TableHead className="font-semibold">Prerequisites</TableHead>
+                  <TableHead className="font-semibold">Equivalencies</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {courses?.map((c: Course) => (
+                  <TableRow key={c.id} className="border-slate-200 dark:border-slate-800">
+                    <TableCell className="font-medium text-slate-900 dark:text-slate-100">{c.code}</TableCell>
+                    <TableCell className="text-slate-700 dark:text-slate-300">{c.name}</TableCell>
+                    <TableCell className="text-slate-700 dark:text-slate-300">{c.creditHours}</TableCell>
+                    <TableCell>
+                      {c.prerequisites?.length ? (
+                        <div className="flex flex-col gap-1">
+                          {c.prerequisites.map((p, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">{p.prerequisiteCourse.code}</Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 text-xs">None</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {c.equivalenciesA?.length ? (
+                        <div className="flex flex-col gap-1">
+                          {c.equivalenciesA.map((e, i) => (
+                            <Badge key={i} variant="secondary" className="text-xs">{e.courseB.code}</Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 text-xs">None</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
