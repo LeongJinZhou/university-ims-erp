@@ -236,7 +236,7 @@ async function main() {
   const student = await prisma.student.create({
     data: {
       userId: users[UserRole.STUDENT].id,
-      studentId: 'QIU20250001',
+      studentId: 'UIMS20250001',
       programmeId: bcsProg.id,
       programmeVersionId: (await prisma.programmeVersion.create({
         data: { programmeId: bcsProg.id, version: 'BCS-2025-v1', effectiveFrom: new Date('2025-11-01') }

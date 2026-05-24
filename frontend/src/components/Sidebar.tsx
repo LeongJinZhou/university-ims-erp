@@ -27,7 +27,7 @@ export function Sidebar() {
     <aside className="w-64 border-r bg-card">
       <div className="flex h-16 items-center border-b px-6">
         <GraduationCap className="h-6 w-6 mr-2" />
-        <span className="font-semibold">QIU-IMS ERP</span>
+        <span className="font-semibold">University IMS ERP</span>
       </div>
       <nav className="p-4 space-y-2">
         {navItems.map((item) => {

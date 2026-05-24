@@ -12,7 +12,7 @@ function App() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>QIU-IMS ERP</CardTitle>
+          <CardTitle>University IMS ERP</CardTitle>
           <CardDescription>University Integrated Management System</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
