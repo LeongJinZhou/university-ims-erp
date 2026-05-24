@@ -57,6 +57,8 @@ export class FinanceService {
         fees: {
           create: [
             {
+              studentId,
+              semesterId,
               feeType: FeeType.TUITION,
               amount: feeStructure.amount * totalCredits,
               currency: feeStructure.currency,
@@ -64,12 +66,16 @@ export class FinanceService {
               creditHours: totalCredits,
             },
             ...(retakeFees > 0 ? [{
+              studentId,
+              semesterId,
               feeType: FeeType.RETAKE,
               amount: retakeFees,
               currency: feeStructure.currency,
               description: 'Retake fees',
             }] : []),
             ...(overloadAppealFees > 0 ? [{
+              studentId,
+              semesterId,
               feeType: FeeType.OVERLOAD,
               amount: overloadAppealFees,
               currency: feeStructure.currency,
