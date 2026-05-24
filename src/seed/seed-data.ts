@@ -201,8 +201,10 @@ async function main() {
       const allCourses = await prisma.course.findMany({ where: { programmeId: bcs.id } });
       for (let i = 0; i < sem.courseCount; i++) {
         if (allCourses[i]) {
-          await prisma.mqaPlanCourse.create({
-            data: { semesterPlanId: plan.id, courseId: allCourses[i].id, isElective: false },
+          await prisma.mqaPlanCourse.upsert({
+            where: { semesterPlanId_courseId: { semesterPlanId: plan.id, courseId: allCourses[i].id } },
+            update: { isElective: false },
+            create: { semesterPlanId: plan.id, courseId: allCourses[i].id, isElective: false },
           });
         }
       }
