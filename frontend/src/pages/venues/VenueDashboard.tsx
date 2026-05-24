@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { venueApi } from '../../lib/api'
 
 const venueSchema = z.object({
   code: z.string().min(1, 'Venue code is required'),
@@ -19,19 +20,21 @@ const venueSchema = z.object({
 
 type VenueForm = z.infer<typeof venueSchema>
 
-const mockVenues = [
-  { id: '1', code: 'LAB101', name: 'Programming Lab 1', type: 'LAB', capacity: 30, equipment: 'PC, Projector' },
-  { id: '2', code: 'LAB201', name: 'Programming Lab 2', type: 'LAB', capacity: 30, equipment: 'PC, Projector' },
-  { id: '3', code: 'LT101', name: 'Lecture Theatre 1', type: 'LT', capacity: 100, equipment: 'Projector, Sound' },
-  { id: '4', code: 'LT102', name: 'Lecture Theatre 2', type: 'LT', capacity: 80, equipment: 'Projector' },
-]
+type Venue = {
+  id: string
+  code: string
+  name: string
+  type: string
+  capacity: number
+  equipment: string
+}
 
 export function VenueDashboard() {
   const { data: venues, isLoading, error } = useQuery({
     queryKey: ['venues'],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 500))
-      return mockVenues
+      const { data } = await venueApi.getAll()
+      return data
     },
   })
 
