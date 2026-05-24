@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { courseApi } from '../../lib/api'
 
 const courseSchema = z.object({
   code: z.string().min(1, 'Course code is required'),
@@ -19,25 +20,22 @@ const courseSchema = z.object({
 
 type CourseForm = z.infer<typeof courseSchema>
 
-const mockCourses = [
-  { id: '1', code: 'CS101', name: 'Programming Fundamentals', credits: 3, programme: 'BCS', prerequisites: [], equivalents: [] },
-  { id: '2', code: 'CS201', name: 'Data Structures', credits: 3, programme: 'BCS', prerequisites: ['CS101'], equivalents: [] },
-  { id: '3', code: 'CS202', name: 'Algorithms', credits: 4, programme: 'BCS', prerequisites: ['CS201'], equivalents: ['CS302'] },
-  { id: '4', code: 'MATH101', name: 'Calculus I', credits: 3, programme: 'BCS', prerequisites: [], equivalents: ['MATH111'] },
-]
-
-const mockPrerequisites = [
-  { id: '1', courseId: '2', prerequisiteId: '1', type: 'MANDATORY' },
-  { id: '2', courseId: '3', prerequisiteId: '2', type: 'MANDATORY' },
-  { id: '3', courseId: '3', prerequisiteId: '4', type: 'COREQUISITE' },
-]
+type Course = {
+  id: string
+  code: string
+  name: string
+  credits: number
+  programme: string
+  prerequisites: string[]
+  equivalents: string[]
+}
 
 export function CourseDashboard() {
   const { data: courses, isLoading, error } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 500))
-      return mockCourses
+      const { data } = await courseApi.getAll()
+      return data
     },
   })
 
