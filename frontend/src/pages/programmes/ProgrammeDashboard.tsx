@@ -20,11 +20,7 @@ const programmeSchema = z.object({
 
 type ProgrammeForm = z.infer<typeof programmeSchema>
 
-const mockProgrammes = [
-  { id: '1', name: 'Bachelor of Computer Science', code: 'BCS', faculty: 'FICT', credits: 123, maxSem: 6 },
-  { id: '2', name: 'Bachelor of Business Administration', code: 'BBA', faculty: 'FOBM', credits: 120, maxSem: 6 },
-  { id: '3', name: 'Bachelor of Accounting', code: 'BAcc', faculty: 'FOBM', credits: 120, maxSem: 6 },
-]
+type Programme = { id: string; name: string; code: string; faculty: string; credits: number; maxSem: number }
 
 export function ProgrammeDashboard() {
   const { data: programmes, isLoading, error } = useQuery({
