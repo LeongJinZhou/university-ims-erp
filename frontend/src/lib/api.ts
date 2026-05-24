@@ -53,8 +53,8 @@ export const hrApi = {
 }
 
 export const financeApi = {
-  getAll: () => request('/fees'),
-  create: (data: any) => post('/fees', data),
+  getAll: () => request('/finance/invoices'),
+  create: (data: any) => post('/finance/invoices', data),
 }
 
 export const notificationApi = {
