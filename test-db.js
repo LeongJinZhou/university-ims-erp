@@ -8,8 +8,13 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const result = await prisma.$queryRawUnsafe('SELECT 1 as val');
-  console.log('Result:', result);
+  const students = await prisma.student.findMany({
+    include: {
+      user: true,
+      programme: true,
+    }
+  });
+  console.log('Seeded Students:', JSON.stringify(students, null, 2));
 }
 
 main()
