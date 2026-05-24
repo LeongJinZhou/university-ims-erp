@@ -36,17 +36,18 @@ async function main() {
 
   console.log('Created 6 faculties');
 
+  // Create departments first (faculties can reference them later if needed)
   const departments = [
-    { name: 'Department of Computer Science', code: 'DCS', faculty: fict },
-    { name: 'Department of Information Technology', code: 'DIT', faculty: fict },
-    { name: 'Department of Business Administration', code: 'DBA', faculty: fobm },
-    { name: 'Department of Accounting', code: 'DACCT', faculty: fobm },
-    { name: 'Department of Education', code: 'EDU', faculty: foe },
-    { name: 'Department of Psychology', code: 'PSY', faculty: fass },
-    { name: 'Department of Biology', code: 'BIO', faculty: fos },
-    { name: 'Department of Chemistry', code: 'CHEM', faculty: fos },
-    { name: 'Department of Mathematics', code: 'MATH', faculty: fos },
-    { name: 'Department of Occupational Health', code: 'DOH', faculty: fosh },
+    { name: 'Department of Computer Science', code: 'DCS' },
+    { name: 'Department of Information Technology', code: 'DIT' },
+    { name: 'Department of Business Administration', code: 'DBA' },
+    { name: 'Department of Accounting', code: 'DACCT' },
+    { name: 'Department of Education', code: 'EDU' },
+    { name: 'Department of Psychology', code: 'PSY' },
+    { name: 'Department of Biology', code: 'BIO' },
+    { name: 'Department of Chemistry', code: 'CHEM' },
+    { name: 'Department of Mathematics', code: 'MATH' },
+    { name: 'Department of Occupational Health', code: 'DOH' },
   ];
 
   for (const dept of departments) {
