@@ -43,8 +43,9 @@ async function main() {
   await prisma.programme.deleteMany({});
   
   await prisma.lecturerAvailability.deleteMany({});
+  await prisma.performanceReview.deleteMany({});
   await prisma.lecturer.deleteMany({});
-  
+
   await prisma.department.deleteMany({});
   await prisma.faculty.deleteMany({});
   await prisma.user.deleteMany({});
