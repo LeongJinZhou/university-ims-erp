@@ -31,12 +31,26 @@ type Course = {
 }
 
 export function CourseDashboard() {
+  const queryClient = useQueryClient()
+  const { data: courses, isLoading, error } = useQuery({
+    queryKey: ['courses'],
+    queryFn: async () => {
+      const { data } = await courseApi.getAll()
+      return data
+    },
+  })
+
   const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm<CourseForm>({
     resolver: zodResolver(courseSchema),
   })
 
+  const createMutation = useMutation({
+    mutationFn: (data: CourseForm) => courseApi.create(data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['courses'] }),
+  })
+
   const onSubmit = (data: CourseForm) => {
-    console.log('Creating course:', data)
+    createMutation.mutate(data)
     reset()
   }
 
