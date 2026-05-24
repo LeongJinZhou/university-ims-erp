@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { hrApi } from '../../lib/api'
 
 const lecturerSchema = z.object({
   staffId: z.string().min(1, 'Staff ID is required'),
@@ -19,18 +20,21 @@ const lecturerSchema = z.object({
 
 type LecturerForm = z.infer<typeof lecturerSchema>
 
-const mockLecturers = [
-  { id: '1', staffId: 'STF001', name: 'Dr. Smith', department: 'FOE', position: 'Senior Lecturer', status: 'ACTIVE' },
-  { id: '2', staffId: 'STF002', name: 'Dr. Jones', department: 'FOE', position: 'Lecturer', status: 'ACTIVE' },
-  { id: '3', staffId: 'STF003', name: 'Dr. Lee', department: 'FOE', position: 'Associate Professor', status: 'ON_LEAVE' },
-]
+type Lecturer = {
+  id: string
+  staffId: string
+  name: string
+  department: string
+  position: string
+  status: string
+}
 
 export function HrDashboard() {
   const { data: lecturers, isLoading, error } = useQuery({
     queryKey: ['lecturers'],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 500))
-      return mockLecturers
+      const { data } = await hrApi.getAll()
+      return data
     },
   })
 
