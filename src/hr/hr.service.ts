@@ -110,7 +110,7 @@ export class HrService {
   async getTeachingLoads(semesterId: string): Promise<TeachingLoad[]> {
     const offerings = await this.prisma.courseOffering.findMany({
       where: { semesterId },
-      include: { lecturer: true, course: true },
+      include: { lecturer: { include: { user: true } }, course: true },
     });
 
     const loadMap = new Map<string, TeachingLoad>();
