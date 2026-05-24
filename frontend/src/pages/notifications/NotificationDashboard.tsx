@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { notificationApi } from '../../lib/api'
 
 const notificationSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -20,18 +21,21 @@ const notificationSchema = z.object({
 
 type NotificationForm = z.infer<typeof notificationSchema>
 
-const mockNotifications = [
-  { id: '1', title: 'Exam Schedule Released', message: 'Final exams start Jan 15', type: 'INFO', target: 'ALL', date: '2025-01-01' },
-  { id: '2', title: 'Payment Reminder', message: 'Outstanding fees due', type: 'WARNING', target: 'STUDENTS', date: '2025-01-02' },
-  { id: '3', title: 'Campus Closure', message: 'Friday maintenance', type: 'ALERT', target: 'ALL', date: '2025-01-03' },
-]
+type Notification = {
+  id: string
+  title: string
+  message: string
+  type: string
+  target: string
+  date: string
+}
 
 export function NotificationDashboard() {
   const { data: notifications, isLoading, error } = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 500))
-      return mockNotifications
+      const { data } = await notificationApi.getAll()
+      return data
     },
   })
 
