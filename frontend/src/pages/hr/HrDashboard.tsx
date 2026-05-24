@@ -48,79 +48,81 @@ export function HrDashboard() {
   }
 
   if (isLoading) return <HrSkeleton />
-  if (error) return <div>Error loading lecturers</div>
+  if (error) return <div className="p-6 text-red-600">Error loading lecturers</div>
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">HR & Lecturer Management</h1>
-        <p className="text-muted-foreground">Staff profiles and workload allocation</p>
+    <div className="space-y-6">
+      <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">HR & Lecturer Management</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Staff profiles and workload allocation</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Register Lecturer</CardTitle>
-          <CardDescription>Add new academic staff</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Register Lecturer</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Add new academic staff</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div>
-              <Input placeholder="Staff ID" {...register('staffId')} />
-              {errors.staffId && <p className="text-sm text-red-500">{errors.staffId.message}</p>}
+        <CardContent className="pt-0">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Input placeholder="Staff ID" className="h-10" {...register('staffId')} />
+                {errors.staffId && <p className="text-xs text-red-600">{errors.staffId.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input placeholder="Full Name" className="h-10" {...register('name')} />
+                {errors.name && <p className="text-xs text-red-600">{errors.name.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Select onValueChange={(v) => setValue('departmentId', v)}>
+                  <SelectTrigger className="h-10"><SelectValue placeholder="Department" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="FOE">Faculty of Engineering</SelectItem>
+                    <SelectItem value="FOBM">Faculty of Business</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Select onValueChange={(v) => setValue('position', v)}>
+                  <SelectTrigger className="h-10"><SelectValue placeholder="Position" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LECTURER">Lecturer</SelectItem>
+                    <SelectItem value="SENIOR_LECTURER">Senior Lecturer</SelectItem>
+                    <SelectItem value="ASSOC_PROFESSOR">Associate Professor</SelectItem>
+                    <SelectItem value="PROFESSOR">Professor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Input placeholder="Full Name" {...register('name')} />
-              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-            </div>
-            <div>
-              <Select onValueChange={(v) => setValue('departmentId', v)}>
-                <SelectTrigger><SelectValue placeholder="Department" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="FOE">Faculty of Engineering</SelectItem>
-                  <SelectItem value="FOBM">Faculty of Business</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Select onValueChange={(v) => setValue('position', v)}>
-                <SelectTrigger><SelectValue placeholder="Position" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="LECTURER">Lecturer</SelectItem>
-                  <SelectItem value="SENIOR_LECTURER">Senior Lecturer</SelectItem>
-                  <SelectItem value="ASSOC_PROFESSOR">Associate Professor</SelectItem>
-                  <SelectItem value="PROFESSOR">Professor</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="submit" className="md:col-span-2 lg:col-span-5">Add Lecturer</Button>
+            <Button type="submit" className="w-fit px-6">Add Lecturer</Button>
           </form>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Lecturer Directory</CardTitle>
-          <CardDescription>Total: {lecturers?.length || 0} staff</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Lecturer Directory</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Total: {lecturers?.length || 0} staff</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Staff ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Position</TableHead>
-                <TableHead>Status</TableHead>
+              <TableRow className="border-slate-200 dark:border-slate-800">
+                <TableHead className="font-semibold">Staff ID</TableHead>
+                <TableHead className="font-semibold">Name</TableHead>
+                <TableHead className="font-semibold">Department</TableHead>
+                <TableHead className="font-semibold">Position</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {lecturers?.map(l => (
-                <TableRow key={l.id}>
-                  <TableCell className="font-medium">{l.staffId}</TableCell>
-                  <TableCell>{l.name}</TableCell>
-                  <TableCell>{l.department}</TableCell>
-                  <TableCell>{l.position}</TableCell>
-                  <TableCell><Badge variant={l.status === 'ACTIVE' ? 'default' : 'secondary'}>{l.status.replace('_', ' ')}</Badge></TableCell>
+              {lecturers?.map((l: Lecturer) => (
+                <TableRow key={l.id} className="border-slate-200 dark:border-slate-800">
+                  <TableCell className="font-medium text-slate-900 dark:text-slate-100">{l.staffId}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{l.name}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{l.department}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{l.position}</TableCell>
+                  <TableCell><Badge variant={l.status === 'ACTIVE' ? 'default' : 'secondary'} className="text-xs">{l.status.replace('_', ' ')}</Badge></TableCell>
                 </TableRow>
               ))}
             </TableBody>
