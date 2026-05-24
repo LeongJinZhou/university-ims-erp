@@ -63,7 +63,11 @@ async function main() {
   ];
 
   for (const dept of departments) {
-    await prisma.department.create({ data: dept });
+    await prisma.department.upsert({
+      where: { code: dept.code },
+      update: { name: dept.name },
+      create: dept,
+    });
   }
   console.log('Created 10 departments');
 
