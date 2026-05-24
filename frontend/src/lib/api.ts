@@ -15,48 +15,49 @@ const post = async (endpoint: string, data: any) => {
 }
 
 export const programmeApi = {
-  getAll: () => api.get('/programmes'),
-  getById: (id: string) => api.get(`/programmes/${id}`),
-  getMqaPlans: (id: string) => api.get(`/programmes/${id}/mqa`),
+  getAll: () => request('/programmes'),
+  getById: (id: string) => request(`/programmes/${id}`),
+  getMqaPlans: (id: string) => request(`/programmes/${id}/mqa`),
+  create: (data: any) => post('/programmes', data),
 }
 
 export const studentApi = {
-  getAll: () => api.get('/students'),
-  getById: (id: string) => api.get(`/students/${id}`),
-  create: (data: any) => api.post('/students', data),
+  getAll: () => request('/students'),
+  getById: (id: string) => request(`/students/${id}`),
+  create: (data: any) => post('/students', data),
 }
 
 export const courseApi = {
-  getAll: () => api.get('/courses'),
-  create: (data: any) => api.post('/courses', data),
+  getAll: () => request('/courses'),
+  create: (data: any) => post('/courses', data),
 }
 
 export const venueApi = {
-  getAll: () => api.get('/venues'),
-  create: (data: any) => api.post('/venues', data),
+  getAll: () => request('/venues'),
+  create: (data: any) => post('/venues', data),
 }
 
 export const examApi = {
-  getAll: () => api.get('/exams'),
-  create: (data: any) => api.post('/exams', data),
+  getAll: () => request('/exams'),
+  create: (data: any) => post('/exams', data),
 }
 
 export const enrolmentApi = {
-  getAll: () => api.get('/enrolments'),
-  create: (data: any) => api.post('/enrolments', data),
+  getAll: () => request('/enrolments'),
+  create: (data: any) => post('/enrolments', data),
 }
 
 export const hrApi = {
-  getAll: () => api.get('/lecturers'),
-  create: (data: any) => api.post('/lecturers', data),
+  getAll: () => request('/lecturers'),
+  create: (data: any) => post('/lecturers', data),
 }
 
 export const financeApi = {
-  getAll: () => api.get('/fees'),
-  create: (data: any) => api.post('/fees', data),
+  getAll: () => request('/fees'),
+  create: (data: any) => post('/fees', data),
 }
 
 export const notificationApi = {
-  getAll: () => api.get('/notifications'),
-  create: (data: any) => api.post('/notifications', data),
+  getAll: () => request('/notifications'),
+  create: (data: any) => post('/notifications', data),
 }
