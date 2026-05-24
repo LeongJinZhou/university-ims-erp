@@ -102,7 +102,7 @@ export function ProgrammeDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {programmes?.map(p => (
+              {programmes?.map((p: Programme) => (
                 <TableRow key={p.id} className="border-slate-200 dark:border-slate-800">
                   <TableCell className="font-medium text-slate-900 dark:text-slate-100">{p.code}</TableCell>
                   <TableCell className="text-slate-700 dark:text-slate-300">{p.name}</TableCell>
