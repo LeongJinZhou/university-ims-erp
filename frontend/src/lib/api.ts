@@ -48,8 +48,8 @@ export const enrolmentApi = {
 }
 
 export const hrApi = {
-  getAll: () => request('/lecturers'),
-  create: (data: any) => post('/lecturers', data),
+  getAll: () => request('/hr/lecturers'),
+  create: (data: any) => post('/hr/lecturers', data),
 }
 
 export const financeApi = {
