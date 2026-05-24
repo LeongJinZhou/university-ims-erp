@@ -177,8 +177,10 @@ async function main() {
       });
     }
 
-    const version = await prisma.programmeVersion.create({
-      data: { programmeId: bcs.id, version: '2025-v1', effectiveFrom: new Date('2025-11-01') },
+    const version = await prisma.programmeVersion.upsert({
+      where: { programmeId_version: { programmeId: bcs.id, version: '2025-v1' } },
+      update: { effectiveFrom: new Date('2025-11-01') },
+      create: { programmeId: bcs.id, version: '2025-v1', effectiveFrom: new Date('2025-11-01') },
     });
 
     const semesters = [
@@ -191,8 +193,10 @@ async function main() {
     ];
 
     for (const sem of semesters) {
-      const plan = await prisma.mqaSemesterPlan.create({
-        data: { programmeVersionId: version.id, semesterNumber: sem.num, totalCredits: sem.credits },
+      const plan = await prisma.mqaSemesterPlan.upsert({
+        where: { programmeVersionId_semesterNumber: { programmeVersionId: version.id, semesterNumber: sem.num } },
+        update: { totalCredits: sem.credits },
+        create: { programmeVersionId: version.id, semesterNumber: sem.num, totalCredits: sem.credits },
       });
       const allCourses = await prisma.course.findMany({ where: { programmeId: bcs.id } });
       for (let i = 0; i < sem.courseCount; i++) {
