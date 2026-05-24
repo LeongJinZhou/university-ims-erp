@@ -22,9 +22,9 @@ export const programmeApi = {
 }
 
 export const studentApi = {
-  getAll: () => request('/students'),
-  getById: (id: string) => request(`/students/${id}`),
-  create: (data: any) => post('/students', data),
+  getAll: () => request('/student'),
+  getById: (id: string) => request(`/student/${id}`),
+  create: (data: any) => post('/student', data),
 }
 
 export const courseApi = {
