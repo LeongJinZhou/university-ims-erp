@@ -29,8 +29,8 @@ export function ProgrammeDashboard() {
   const { data: programmes, isLoading, error } = useQuery({
     queryKey: ['programmes'],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 500))
-      return mockProgrammes
+      const { data } = await programmeApi.getAll()
+      return data
     },
   })
 
