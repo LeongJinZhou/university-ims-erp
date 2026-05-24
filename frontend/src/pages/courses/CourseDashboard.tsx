@@ -54,7 +54,7 @@ export function CourseDashboard() {
         </CardHeader>
         <CardContent className="pt-0">
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="flex flex-col gap-1.5">
                 <Input placeholder="Course Code" className="h-10" {...register('code')} />
                 {errors.code && <p className="text-xs text-red-600">{errors.code.message}</p>}
