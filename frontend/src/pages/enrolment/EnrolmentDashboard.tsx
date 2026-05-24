@@ -45,77 +45,79 @@ export function EnrolmentDashboard() {
   }
 
   if (isLoading) return <EnrolmentSkeleton />
-  if (error) return <div>Error loading enrolments</div>
+  if (error) return <div className="p-6 text-red-600">Error loading enrolments</div>
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Enrolment & Registration</h1>
-        <p className="text-muted-foreground">Student course registration with credit validation</p>
+    <div className="space-y-6">
+      <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Enrolment & Registration</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Student course registration with credit validation</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Register Student</CardTitle>
-          <CardDescription>Add student to course for semester</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Register Student</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Add student to course for semester</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div>
-              <Select onValueChange={(v) => setValue('studentId', v)}>
-                <SelectTrigger><SelectValue placeholder="Student" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="U2025001">U2025001</SelectItem>
-                  <SelectItem value="U2025002">U2025002</SelectItem>
-                </SelectContent>
-              </Select>
+        <CardContent className="pt-0">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Select onValueChange={(v) => setValue('studentId', v)}>
+                  <SelectTrigger className="h-10"><SelectValue placeholder="Student" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="U2025001">U2025001</SelectItem>
+                    <SelectItem value="U2025002">U2025002</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Select onValueChange={(v) => setValue('courseId', v)}>
+                  <SelectTrigger className="h-10"><SelectValue placeholder="Course" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="CS101">CS101</SelectItem>
+                    <SelectItem value="CS201">CS201</SelectItem>
+                    <SelectItem value="MATH101">MATH101</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Select onValueChange={(v) => setValue('semesterId', v)}>
+                  <SelectTrigger className="h-10"><SelectValue placeholder="Semester" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="S1-2025">Semester 1 2025</SelectItem>
+                    <SelectItem value="S2-2025">Semester 2 2025</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Select onValueChange={(v) => setValue('courseId', v)}>
-                <SelectTrigger><SelectValue placeholder="Course" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CS101">CS101</SelectItem>
-                  <SelectItem value="CS201">CS201</SelectItem>
-                  <SelectItem value="MATH101">MATH101</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Select onValueChange={(v) => setValue('semesterId', v)}>
-                <SelectTrigger><SelectValue placeholder="Semester" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="S1-2025">Semester 1 2025</SelectItem>
-                  <SelectItem value="S2-2025">Semester 2 2025</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="submit" className="md:col-span-2 lg:col-span-5">Enrol Student</Button>
+            <Button type="submit" className="w-fit px-6">Enrol Student</Button>
           </form>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Enrolment List</CardTitle>
-          <CardDescription>Total: {enrolments?.length || 0} enrolments</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Enrolment List</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Total: {enrolments?.length || 0} enrolments</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Student</TableHead>
-                <TableHead>Course</TableHead>
-                <TableHead>Semester</TableHead>
-                <TableHead>Status</TableHead>
+              <TableRow className="border-slate-200 dark:border-slate-800">
+                <TableHead className="font-semibold">Student</TableHead>
+                <TableHead className="font-semibold">Course</TableHead>
+                <TableHead className="font-semibold">Semester</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {enrolments?.map(e => (
-                <TableRow key={e.id}>
-                  <TableCell className="font-medium">{e.student}</TableCell>
-                  <TableCell>{e.course}</TableCell>
-                  <TableCell>{e.semester}</TableCell>
-                  <TableCell><Badge variant={e.status === 'ENROLLED' ? 'default' : 'secondary'}>{e.status}</Badge></TableCell>
+              {enrolments?.map((e: Enrolment) => (
+                <TableRow key={e.id} className="border-slate-200 dark:border-slate-800">
+                  <TableCell className="font-medium text-slate-900 dark:text-slate-100">{e.student}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{e.course}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{e.semester}</TableCell>
+                  <TableCell><Badge variant={e.status === 'ENROLLED' ? 'default' : 'secondary'} className="text-xs">{e.status}</Badge></TableCell>
                 </TableRow>
               ))}
             </TableBody>
