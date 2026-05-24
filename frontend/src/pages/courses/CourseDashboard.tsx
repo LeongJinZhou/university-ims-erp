@@ -7,7 +7,6 @@ import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
-import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
 import { courseApi } from '../../lib/api'
 
@@ -19,16 +18,6 @@ const courseSchema = z.object({
 })
 
 type CourseForm = z.infer<typeof courseSchema>
-
-type Course = {
-  id: string
-  code: string
-  name: string
-  credits: number
-  programme: string
-  prerequisites: string[]
-  equivalents: string[]
-}
 
 export function CourseDashboard() {
   const { data: courses, isLoading, error } = useQuery({
