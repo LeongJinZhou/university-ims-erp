@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { enrolmentApi } from '../../lib/api'
 
 const enrolmentSchema = z.object({
   studentId: z.string().min(1, 'Student is required'),
@@ -17,18 +18,20 @@ const enrolmentSchema = z.object({
 
 type EnrolmentForm = z.infer<typeof enrolmentSchema>
 
-const mockEnrolments = [
-  { id: '1', student: 'U2025001', course: 'CS101', semester: 'S1-2025', status: 'ENROLLED' },
-  { id: '2', student: 'U2025001', course: 'MATH101', semester: 'S1-2025', status: 'ENROLLED' },
-  { id: '3', student: 'U2025002', course: 'CS101', semester: 'S1-2025', status: 'PENDING' },
-]
+type Enrolment = {
+  id: string
+  student: string
+  course: string
+  semester: string
+  status: string
+}
 
 export function EnrolmentDashboard() {
   const { data: enrolments, isLoading, error } = useQuery({
     queryKey: ['enrolments'],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 500))
-      return mockEnrolments
+      const { data } = await enrolmentApi.getAll()
+      return data
     },
   })
 
