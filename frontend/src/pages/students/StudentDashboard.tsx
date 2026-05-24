@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { studentApi } from '../../lib/api'
 
 const studentSchema = z.object({
   studentId: z.string().min(1, 'Student ID is required'),
@@ -20,18 +21,23 @@ const studentSchema = z.object({
 
 type StudentForm = z.infer<typeof studentSchema>
 
-const mockStudents = [
-  { id: '1', studentId: 'U2025001', name: 'Alex Johnson', programme: 'BCS', credits: 45, gpa: 3.75, status: 'ON_TRACK', semester: 3 },
-  { id: '2', studentId: 'U2025002', name: 'Bella Chen', programme: 'BBA', credits: 36, gpa: 3.42, status: 'ON_TRACK', semester: 2 },
-  { id: '3', studentId: 'U2025003', name: 'Chris Wong', programme: 'BCS', credits: 30, gpa: 2.98, status: 'DELAYED', semester: 2 },
-]
+type Student = {
+  id: string
+  studentId: string
+  name: string
+  programme: string
+  credits: number
+  gpa: number
+  status: string
+  semester: number
+}
 
 export function StudentDashboard() {
   const { data: students, isLoading, error } = useQuery({
     queryKey: ['students'],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 500))
-      return mockStudents
+      const { data } = await studentApi.getAll()
+      return data
     },
   })
 
