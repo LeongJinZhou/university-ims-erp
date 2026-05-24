@@ -3,7 +3,6 @@ import { cn } from '../lib/utils'
 import {
   LayoutDashboard,
   GraduationCap,
-  BookOpen,
   Users,
   Calendar,
   CreditCard,
