@@ -44,74 +44,76 @@ export function ProgrammeDashboard() {
   }
 
   if (isLoading) return <ProgrammeSkeleton />
-  if (error) return <div>Error loading programmes</div>
+  if (error) return <div className="p-6 text-red-600">Error loading programmes</div>
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Programmes & MQA Repository</h1>
-        <p className="text-muted-foreground">Manage academic programmes and curriculum plans</p>
+    <div className="space-y-6">
+      <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Programmes & MQA Repository</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage academic programmes and curriculum plans</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Create New Programme</CardTitle>
-          <CardDescription>Add a new academic programme to the repository</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Create New Programme</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Add a new academic programme to the repository</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div>
-              <Input placeholder="Programme Name" {...register('name')} />
-              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+        <CardContent className="pt-0">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Input placeholder="Programme Name" className="h-10" {...register('name')} />
+                {errors.name && <p className="text-xs text-red-600">{errors.name.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input placeholder="Code (e.g., BCS)" className="h-10" {...register('code')} />
+                {errors.code && <p className="text-xs text-red-600">{errors.code.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input placeholder="Faculty ID" className="h-10" {...register('facultyId')} />
+                {errors.facultyId && <p className="text-xs text-red-600">{errors.facultyId.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input type="number" placeholder="Total Credits" className="h-10" {...register('totalCredits', { valueAsNumber: true })} />
+                {errors.totalCredits && <p className="text-xs text-red-600">{errors.totalCredits.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input type="number" placeholder="Max Duration (semesters)" className="h-10" {...register('maxDurationSemesters', { valueAsNumber: true })} />
+                {errors.maxDurationSemesters && <p className="text-xs text-red-600">{errors.maxDurationSemesters.message}</p>}
+              </div>
             </div>
-            <div>
-              <Input placeholder="Code (e.g., BCS)" {...register('code')} />
-              {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>}
-            </div>
-            <div>
-              <Input placeholder="Faculty ID" {...register('facultyId')} />
-              {errors.facultyId && <p className="text-sm text-red-500">{errors.facultyId.message}</p>}
-            </div>
-            <div>
-              <Input type="number" placeholder="Total Credits" {...register('totalCredits', { valueAsNumber: true })} />
-              {errors.totalCredits && <p className="text-sm text-red-500">{errors.totalCredits.message}</p>}
-            </div>
-            <div>
-              <Input type="number" placeholder="Max Duration (semesters)" {...register('maxDurationSemesters', { valueAsNumber: true })} />
-              {errors.maxDurationSemesters && <p className="text-sm text-red-500">{errors.maxDurationSemesters.message}</p>}
-            </div>
-            <Button type="submit" className="md:col-span-2 lg:col-span-5">Create Programme</Button>
+            <Button type="submit" className="w-fit px-6">Create Programme</Button>
           </form>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Programme List</CardTitle>
-          <CardDescription>Total: {programmes?.length || 0} programmes</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Programme List</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Total: {programmes?.length || 0} programmes</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Code</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Faculty</TableHead>
-                <TableHead>Credits</TableHead>
-                <TableHead>Max Duration</TableHead>
-                <TableHead>MQA Plans</TableHead>
+              <TableRow className="border-slate-200 dark:border-slate-800">
+                <TableHead className="font-semibold">Code</TableHead>
+                <TableHead className="font-semibold">Name</TableHead>
+                <TableHead className="font-semibold">Faculty</TableHead>
+                <TableHead className="font-semibold">Credits</TableHead>
+                <TableHead className="font-semibold">Max Duration</TableHead>
+                <TableHead className="font-semibold">MQA Plans</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {programmes?.map(p => (
-                <TableRow key={p.id}>
-                  <TableCell className="font-medium">{p.code}</TableCell>
-                  <TableCell>{p.name}</TableCell>
-                  <TableCell>{p.faculty}</TableCell>
-                  <TableCell>{p.credits}</TableCell>
-                  <TableCell>{p.maxSem}</TableCell>
+                <TableRow key={p.id} className="border-slate-200 dark:border-slate-800">
+                  <TableCell className="font-medium text-slate-900 dark:text-slate-100">{p.code}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{p.name}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{p.faculty}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{p.credits}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{p.maxSem}</TableCell>
                   <TableCell>
-                    <Link to={`/programmes/mqa/${p.id}`} className="text-primary hover:underline">
+                    <Link to={`/programmes/mqa/${p.id}`} className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline">
                       View Plans
                     </Link>
                   </TableCell>
@@ -127,7 +129,7 @@ export function ProgrammeDashboard() {
 
 function ProgrammeSkeleton() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <Skeleton className="h-9 w-64" />
       <Skeleton className="h-5 w-96" />
       <Skeleton className="h-64 w-full" />
