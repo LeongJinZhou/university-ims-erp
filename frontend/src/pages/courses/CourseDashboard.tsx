@@ -92,37 +92,6 @@ export function CourseDashboard() {
           </form>
         </CardContent>
       </Card>
-
-      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-semibold">Course Catalog</CardTitle>
-          <CardDescription className="text-sm text-slate-500">Total: {courses?.length || 0} courses</CardDescription>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-slate-200 dark:border-slate-800">
-                <TableHead className="font-semibold">Code</TableHead>
-                <TableHead className="font-semibold">Name</TableHead>
-                <TableHead className="font-semibold">Credits</TableHead>
-                <TableHead className="font-semibold">Prerequisites</TableHead>
-                <TableHead className="font-semibold">Equivalents</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {courses?.map((c: Course) => (
-                <TableRow key={c.id} className="border-slate-200 dark:border-slate-800">
-                  <TableCell className="font-medium text-slate-900 dark:text-slate-100">{c.code}</TableCell>
-                  <TableCell className="text-slate-700 dark:text-slate-300">{c.name}</TableCell>
-                  <TableCell><Badge variant="outline" className="text-xs">{c.credits} cr</Badge></TableCell>
-                  <TableCell className="text-slate-700 dark:text-slate-300">{c.prerequisites.length ? c.prerequisites.join(', ') : '-'}</TableCell>
-                  <TableCell className="text-slate-700 dark:text-slate-300">{c.equivalents.length ? c.equivalents.join(', ') : '-'}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
     </div>
   )
 }
