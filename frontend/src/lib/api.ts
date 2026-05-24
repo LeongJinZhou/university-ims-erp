@@ -1,9 +1,18 @@
-import axios from 'axios'
+const API_BASE = '/api'
 
-const api = axios.create({
-  baseURL: '/api',
-  headers: { 'Content-Type': 'application/json' },
-})
+const request = async (endpoint: string) => {
+  const res = await fetch(`${API_BASE}${endpoint}`)
+  return res.json()
+}
+
+const post = async (endpoint: string, data: any) => {
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  return res.json()
+}
 
 export const programmeApi = {
   getAll: () => api.get('/programmes'),
