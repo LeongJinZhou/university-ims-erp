@@ -13,6 +13,7 @@ import {
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
   { icon: GraduationCap, label: 'Programmes', href: '/programmes' },
+  { icon: Users, label: 'Students', href: '/students' },
   { icon: Users, label: 'Departments', href: '/departments' },
   { icon: Calendar, label: 'Timetable', href: '/timetable' },
   { icon: CreditCard, label: 'Finance', href: '/finance' },
