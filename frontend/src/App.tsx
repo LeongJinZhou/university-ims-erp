@@ -3,6 +3,7 @@ import { Sidebar } from './components/Sidebar'
 import { ProgrammeDashboard } from './pages/programmes/ProgrammeDashboard'
 import { MqaPlans } from './pages/programmes/MqaPlans'
 import { Departments } from './pages/programmes/Departments'
+import { StudentDashboard } from './pages/students/StudentDashboard'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/programmes" element={<ProgrammeDashboard />} />
             <Route path="/programmes/mqa/:id" element={<MqaPlans />} />
             <Route path="/departments" element={<Departments />} />
+            <Route path="/students" element={<StudentDashboard />} />
           </Routes>
         </main>
       </div>
