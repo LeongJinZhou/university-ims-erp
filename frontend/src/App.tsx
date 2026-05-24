@@ -4,6 +4,7 @@ import { ProgrammeDashboard } from './pages/programmes/ProgrammeDashboard'
 import { MqaPlans } from './pages/programmes/MqaPlans'
 import { Departments } from './pages/programmes/Departments'
 import { StudentDashboard } from './pages/students/StudentDashboard'
+import { CourseDashboard } from './pages/courses/CourseDashboard'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/programmes/mqa/:id" element={<MqaPlans />} />
             <Route path="/departments" element={<Departments />} />
             <Route path="/students" element={<StudentDashboard />} />
+            <Route path="/courses" element={<CourseDashboard />} />
           </Routes>
         </main>
       </div>
