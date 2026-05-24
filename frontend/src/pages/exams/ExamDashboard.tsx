@@ -34,7 +34,7 @@ export function ExamDashboard() {
     },
   })
 
-  const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm<ExamForm>({
+  const { register, handleSubmit, reset, setValue } = useForm<ExamForm>({
     resolver: zodResolver(examSchema),
   })
 
