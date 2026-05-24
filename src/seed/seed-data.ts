@@ -118,6 +118,11 @@ async function main() {
     { name: 'Bachelor of Nutrition', code: 'BNUT', faculty: fos, credits: 120, maxSem: 6, dept: 'BIO' },
     { name: 'Bachelor of Public Health', code: 'BPH', faculty: fosh, credits: 120, maxSem: 6, dept: null },
     { name: 'Bachelor of Chinese Medicine', code: 'BCM', faculty: fosh, credits: 123, maxSem: 6, dept: null },
+    { name: 'Bachelor of Physiotherapy', code: 'BPT', faculty: fosh, credits: 122, maxSem: 6, dept: null },
+    { name: 'Bachelor of Medical Imaging', code: 'BMI', faculty: fosh, credits: 121, maxSem: 6, dept: null },
+    { name: 'Bachelor of Logistics Management', code: 'BLM', faculty: fobm, credits: 120, maxSem: 6, dept: null },
+    { name: 'Bachelor of Human Resource Development', code: 'BHRD', faculty: fobm, credits: 120, maxSem: 6, dept: null },
+    { name: 'Bachelor of Early Childhood Care', code: 'BECC', faculty: foe, credits: 120, maxSem: 6, dept: null },
   ];
 
   for (const prog of programmes) {
