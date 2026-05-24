@@ -127,8 +127,16 @@ async function main() {
       const dept = await prisma.department.findUnique({ where: { code: deptCode } });
       deptId = dept?.id;
     }
-    await prisma.programme.create({
-      data: {
+    await prisma.programme.upsert({
+      where: { code: prog.code },
+      update: {
+        name: prog.name,
+        facultyId: prog.faculty.id,
+        departmentId: deptId,
+        totalCredits: prog.credits,
+        maxDurationSemesters: prog.maxSem,
+      },
+      create: {
         name: prog.name,
         code: prog.code,
         facultyId: prog.faculty.id,
