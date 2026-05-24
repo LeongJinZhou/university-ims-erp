@@ -203,15 +203,27 @@ async function main() {
   // 8. Seed Venues
   console.log('Creating venues & rooms...');
   const blockA = await prisma.venue.create({
-    data: { name: 'Block A Main Campus', code: 'BLOCK-A', campusZone: 'NORTH' }
+    data: { name: 'Block A Main Campus', building: 'Block A', floor: 1 }
   });
   const room101 = await prisma.room.create({
-    data: { name: 'DK101 Lecture Hall', capacity: 50, roomType: 'LECTURE_HALL', venueId: blockA.id }
+    data: { name: 'DK101 Lecture Hall', code: 'DK101', capacity: 50, venueId: blockA.id }
+  });
+
+  const tt = await prisma.timetable.create({
+    data: { semesterId: sem2.id, approvalState: 'DRAFT', solverScore: 0.95 }
   });
 
   // Timetable slots
   await prisma.timetableSlot.create({
-    data: { courseOfferingId: offering1.id, dayOfWeek: 1, startTime: '09:00', endTime: '12:00', venueId: room101.id }
+    data: {
+      timetableId: tt.id,
+      courseOfferingId: offering1.id,
+      sectionId: sec1.id,
+      venueId: room101.id,
+      dayOfWeek: 1,
+      startTime: '09:00',
+      endTime: '12:00',
+    }
   });
 
   // 9. Seed Student & Academic Records
@@ -264,10 +276,10 @@ async function main() {
     data: { programmeId: bcsProg.id, feeType: 'TUITION', amount: 350.0, academicYear: 2025, currency: 'MYR' }
   });
   await prisma.feeStructure.create({
-    data: { feeType: 'RETAKE', amount: 500.0, academicYear: 2025, currency: 'MYR' }
+    data: { programmeId: bcsProg.id, feeType: 'RETAKE', amount: 500.0, academicYear: 2025, currency: 'MYR' }
   });
   await prisma.feeStructure.create({
-    data: { feeType: 'OVERLOAD', amount: 1000.0, academicYear: 2025, currency: 'MYR' }
+    data: { programmeId: bcsProg.id, feeType: 'OVERLOAD', amount: 1000.0, academicYear: 2025, currency: 'MYR' }
   });
 
   console.log('✅ Seeding complete! Database is fully set up with comprehensive mock data.');
