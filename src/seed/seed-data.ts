@@ -10,28 +10,40 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log('Seeding faculties and departments...');
 
-  const fosh = await prisma.faculty.create({
-    data: { name: 'Faculty of Occupational Safety & Health', code: 'FOSH' },
+  const fosh = await prisma.faculty.upsert({
+    where: { code: 'FOSH' },
+    update: { name: 'Faculty of Occupational Safety & Health' },
+    create: { name: 'Faculty of Occupational Safety & Health', code: 'FOSH' },
   });
 
-  const fobm = await prisma.faculty.create({
-    data: { name: 'Faculty of Business & Management', code: 'FOBM' },
+  const fobm = await prisma.faculty.upsert({
+    where: { code: 'FOBM' },
+    update: { name: 'Faculty of Business & Management' },
+    create: { name: 'Faculty of Business & Management', code: 'FOBM' },
   });
 
-  const foe = await prisma.faculty.create({
-    data: { name: 'Faculty of Education', code: 'FOE' },
+  const foe = await prisma.faculty.upsert({
+    where: { code: 'FOE' },
+    update: { name: 'Faculty of Education' },
+    create: { name: 'Faculty of Education', code: 'FOE' },
   });
 
-  const fict = await prisma.faculty.create({
-    data: { name: 'Faculty of Information & Communication Technology', code: 'FICT' },
+  const fict = await prisma.faculty.upsert({
+    where: { code: 'FICT' },
+    update: { name: 'Faculty of Information & Communication Technology' },
+    create: { name: 'Faculty of Information & Communication Technology', code: 'FICT' },
   });
 
-  const fass = await prisma.faculty.create({
-    data: { name: 'Faculty of Arts & Social Sciences', code: 'FASS' },
+  const fass = await prisma.faculty.upsert({
+    where: { code: 'FASS' },
+    update: { name: 'Faculty of Arts & Social Sciences' },
+    create: { name: 'Faculty of Arts & Social Sciences', code: 'FASS' },
   });
 
-  const fos = await prisma.faculty.create({
-    data: { name: 'Faculty of Science', code: 'FOS' },
+  const fos = await prisma.faculty.upsert({
+    where: { code: 'FOS' },
+    update: { name: 'Faculty of Science' },
+    create: { name: 'Faculty of Science', code: 'FOS' },
   });
 
   console.log('Created 6 faculties');
