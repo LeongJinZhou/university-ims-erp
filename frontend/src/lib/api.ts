@@ -28,7 +28,7 @@ export const studentApi = {
 }
 
 export const courseApi = {
-  getAll: () => request('/courses'),
+  getAll: () => request('/courses/programme/BCS'),
   create: (data: any) => post('/courses', data),
 }
 
