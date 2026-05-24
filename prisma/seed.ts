@@ -12,6 +12,7 @@ async function main() {
   await prisma.fee.deleteMany({});
   await prisma.payment.deleteMany({});
   await prisma.invoice.deleteMany({});
+  await prisma.feeStructure.deleteMany({});
   await prisma.appeal.deleteMany({});
   await prisma.dropRequest.deleteMany({});
   await prisma.enrolment.deleteMany({});
@@ -22,12 +23,14 @@ async function main() {
   await prisma.student.deleteMany({});
   
   await prisma.timetableSlot.deleteMany({});
+  await prisma.timetable.deleteMany({});
   await prisma.maintenanceBlock.deleteMany({});
   await prisma.roomBooking.deleteMany({});
   await prisma.room.deleteMany({});
   await prisma.venue.deleteMany({});
   
   await prisma.courseOffering.deleteMany({});
+  await prisma.semester.deleteMany({});
   await prisma.prerequisite.deleteMany({});
   await prisma.courseEquivalency.deleteMany({});
   await prisma.mqaPlanCourse.deleteMany({});
