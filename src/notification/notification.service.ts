@@ -139,6 +139,14 @@ export class NotificationService {
     };
   }
 
+  async createAppeal(
+    studentId: string,
+    appealType: AppealType,
+    semesterId: string,
+    reason: string,
+    supportingDocuments: string[],
+    aiAssessment?: any,
+  ) {
     const student = await this.prisma.student.findUnique({
       where: { id: studentId },
       include: { programme: { include: { faculty: true } } },
