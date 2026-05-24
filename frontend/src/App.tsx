@@ -5,6 +5,7 @@ import { MqaPlans } from './pages/programmes/MqaPlans'
 import { Departments } from './pages/programmes/Departments'
 import { StudentDashboard } from './pages/students/StudentDashboard'
 import { CourseDashboard } from './pages/courses/CourseDashboard'
+import { TimetableDashboard } from './pages/timetable/TimetableDashboard'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/departments" element={<Departments />} />
             <Route path="/students" element={<StudentDashboard />} />
             <Route path="/courses" element={<CourseDashboard />} />
+            <Route path="/timetable" element={<TimetableDashboard />} />
           </Routes>
         </main>
       </div>
