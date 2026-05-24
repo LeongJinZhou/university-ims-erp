@@ -38,8 +38,8 @@ export const venueApi = {
 }
 
 export const examApi = {
-  getAll: () => request('/exams'),
-  create: (data: any) => post('/exams', data),
+  getAll: () => request('/exam/retake-plans'),
+  create: (data: any) => post('/exam/retake-plans', data),
 }
 
 export const enrolmentApi = {
