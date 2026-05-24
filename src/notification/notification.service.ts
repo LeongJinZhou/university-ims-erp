@@ -139,14 +139,15 @@ export class NotificationService {
     };
   }
 
-  async createAppeal(
-    studentId: string,
-    appealType: AppealType,
-    semesterId: string,
-    reason: string,
-    supportingDocuments: string[],
-    aiAssessment?: any,
-  ) {
+    const student = await this.prisma.student.findUnique({
+      where: { id: studentId },
+      include: { programme: { include: { faculty: true } } },
+    });
+
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
     const finalAiAssessment = aiAssessment || await this.generateAiPreAssessment(studentId, appealType, semesterId, reason);
     const appeal = await this.prisma.appeal.create({
       data: {
@@ -161,16 +162,11 @@ export class NotificationService {
     });
 
     await this.sendNotification(
-      studentId,
+      student.userId,
       NotificationChannel.IN_APP,
       'Appeal Submitted',
       `Your ${appealType} appeal has been submitted and is pending review.`,
     );
-
-    const programme = await this.prisma.student.findUnique({
-      where: { id: studentId },
-      include: { programme: { include: { faculty: true } } },
-    });
 
     const pcUsers = await this.prisma.user.findMany({
       where: {
@@ -184,7 +180,7 @@ export class NotificationService {
         pcUser.id,
         NotificationChannel.IN_APP,
         'New Appeal Requires Review',
-        `A ${appealType} appeal has been submitted by a student in ${programme?.programme?.name || 'your programme'}.`,
+        `A ${appealType} appeal has been submitted by a student in ${student.programme?.name || 'your programme'}.`,
         { appealId: appeal.id },
       );
     }
@@ -212,7 +208,7 @@ export class NotificationService {
     });
 
     await this.sendNotification(
-      appeal.studentId,
+      existingAppeal.student.userId,
       NotificationChannel.IN_APP,
       'Appeal Status Updated',
       `Your appeal has been ${status.toLowerCase().replace(/_/g, ' ')}.`,
