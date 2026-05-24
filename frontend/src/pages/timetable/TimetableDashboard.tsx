@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { courseApi, venueApi } from '../../lib/api'
 
 const slotSchema = z.object({
   courseId: z.string().min(1, 'Course is required'),
@@ -21,18 +22,30 @@ const slotSchema = z.object({
 
 type SlotForm = z.infer<typeof slotSchema>
 
-const mockSlots = [
-  { id: '1', course: 'CS101', venue: 'LAB101', day: 'MON', start: '08:00', end: '10:00', lecturer: 'Dr. Smith' },
-  { id: '2', course: 'CS201', venue: 'LAB201', day: 'TUE', start: '10:00', end: '12:00', lecturer: 'Dr. Jones' },
-  { id: '3', course: 'MATH101', venue: 'LT101', day: 'WED', start: '14:00', end: '16:00', lecturer: 'Dr. Lee' },
-]
+type Slot = {
+  id: string
+  course: string
+  venue: string
+  day: string
+  start: string
+  end: string
+  lecturer: string
+}
 
 export function TimetableDashboard() {
   const { data: slots, isLoading, error } = useQuery({
     queryKey: ['slots'],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 500))
-      return mockSlots
+      const { data } = await courseApi.getAll()
+      return data?.map((c: any) => ({
+        id: c.id,
+        course: c.code,
+        venue: c.venue,
+        day: c.day,
+        start: c.startTime,
+        end: c.endTime,
+        lecturer: c.lecturer,
+      })) || []
     },
   })
 
