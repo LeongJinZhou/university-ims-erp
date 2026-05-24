@@ -48,73 +48,75 @@ export function VenueDashboard() {
   }
 
   if (isLoading) return <VenueSkeleton />
-  if (error) return <div>Error loading venues</div>
+  if (error) return <div className="p-6 text-red-600">Error loading venues</div>
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Venue & Resource Manager</h1>
-        <p className="text-muted-foreground">Manage venues, equipment, and capacity assignments</p>
+    <div className="space-y-6">
+      <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Venue & Resource Manager</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage venues, equipment, and capacity assignments</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Register Venue</CardTitle>
-          <CardDescription>Add new venue with capacity and equipment</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Register Venue</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Add new venue with capacity and equipment</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div>
-              <Input placeholder="Venue Code" {...register('code')} />
-              {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>}
+        <CardContent className="pt-0">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Input placeholder="Venue Code" className="h-10" {...register('code')} />
+                {errors.code && <p className="text-xs text-red-600">{errors.code.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input placeholder="Venue Name" className="h-10" {...register('name')} />
+                {errors.name && <p className="text-xs text-red-600">{errors.name.message}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Select onValueChange={(v) => setValue('type', v)}>
+                  <SelectTrigger className="h-10"><SelectValue placeholder="Type" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LAB">Lab</SelectItem>
+                    <SelectItem value="LT">Lecture Theatre</SelectItem>
+                    <SelectItem value="TUT">Tutorial Room</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Input type="number" placeholder="Capacity" className="h-10" {...register('capacity', { valueAsNumber: true })} />
+                {errors.capacity && <p className="text-xs text-red-600">{errors.capacity.message}</p>}
+              </div>
             </div>
-            <div>
-              <Input placeholder="Venue Name" {...register('name')} />
-              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-            </div>
-            <div>
-              <Select onValueChange={(v) => setValue('type', v)}>
-                <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="LAB">Lab</SelectItem>
-                  <SelectItem value="LT">Lecture Theatre</SelectItem>
-                  <SelectItem value="TUT">Tutorial Room</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Input type="number" placeholder="Capacity" {...register('capacity', { valueAsNumber: true })} />
-              {errors.capacity && <p className="text-sm text-red-500">{errors.capacity.message}</p>}
-            </div>
-            <Button type="submit" className="md:col-span-2 lg:col-span-5">Add Venue</Button>
+            <Button type="submit" className="w-fit px-6">Add Venue</Button>
           </form>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Venue Catalog</CardTitle>
-          <CardDescription>Total: {venues?.length || 0} venues</CardDescription>
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-semibold">Venue Catalog</CardTitle>
+          <CardDescription className="text-sm text-slate-500">Total: {venues?.length || 0} venues</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Code</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Capacity</TableHead>
-                <TableHead>Equipment</TableHead>
+              <TableRow className="border-slate-200 dark:border-slate-800">
+                <TableHead className="font-semibold">Code</TableHead>
+                <TableHead className="font-semibold">Name</TableHead>
+                <TableHead className="font-semibold">Type</TableHead>
+                <TableHead className="font-semibold">Capacity</TableHead>
+                <TableHead className="font-semibold">Equipment</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {venues?.map(v => (
-                <TableRow key={v.id}>
-                  <TableCell className="font-medium">{v.code}</TableCell>
-                  <TableCell>{v.name}</TableCell>
-                  <TableCell><Badge variant="outline">{v.type}</Badge></TableCell>
-                  <TableCell>{v.capacity}</TableCell>
-                  <TableCell>{v.equipment}</TableCell>
+              {venues?.map((v: Venue) => (
+                <TableRow key={v.id} className="border-slate-200 dark:border-slate-800">
+                  <TableCell className="font-medium text-slate-900 dark:text-slate-100">{v.code}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{v.name}</TableCell>
+                  <TableCell><Badge variant="outline" className="text-xs">{v.type}</Badge></TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{v.capacity}</TableCell>
+                  <TableCell className="text-slate-700 dark:text-slate-300">{v.equipment}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
