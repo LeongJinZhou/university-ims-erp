@@ -170,8 +170,10 @@ async function main() {
       { code: 'CSC402', name: 'Capstone Project', creditHours: 4 },
     ];
     for (const course of courses) {
-      await prisma.course.create({
-        data: { ...course, programmeId: bcs.id, courseType: 'THEORY' },
+      await prisma.course.upsert({
+        where: { code: course.code },
+        update: { name: course.name, creditHours: course.creditHours, courseType: 'THEORY' },
+        create: { ...course, programmeId: bcs.id, courseType: 'THEORY' },
       });
     }
 
