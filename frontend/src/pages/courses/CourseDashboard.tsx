@@ -1,10 +1,15 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Skeleton } from '../../components/ui/skeleton'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
+import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { courseApi } from '../../lib/api'
 
 const courseSchema = z.object({
   code: z.string().min(1, 'Course code is required'),
@@ -14,6 +19,16 @@ const courseSchema = z.object({
 })
 
 type CourseForm = z.infer<typeof courseSchema>
+
+type Course = {
+  id: string
+  code: string
+  name: string
+  creditHours: number
+  programme: { name: string }
+  prerequisites: { prerequisiteCourse: { code: string; name: string } }[]
+  equivalenciesA: { courseB: { code: string; name: string } }[]
+}
 
 export function CourseDashboard() {
   const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm<CourseForm>({
