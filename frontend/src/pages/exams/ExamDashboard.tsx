@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { examApi } from '../../lib/api'
 
 const examSchema = z.object({
   courseId: z.string().min(1, 'Course is required'),
@@ -19,18 +20,21 @@ const examSchema = z.object({
 
 type ExamForm = z.infer<typeof examSchema>
 
-const mockExams = [
-  { id: '1', course: 'CS101', date: '2025-01-15', duration: 180, venue: 'LT101', status: 'SCHEDULED' },
-  { id: '2', course: 'CS201', date: '2025-01-16', duration: 180, venue: 'LT102', status: 'SCHEDULED' },
-  { id: '3', course: 'MATH101', date: '2025-01-17', duration: 120, venue: 'LT101', status: 'COMPLETED' },
-]
+type Exam = {
+  id: string
+  course: string
+  date: string
+  duration: number
+  venue: string
+  status: string
+}
 
 export function ExamDashboard() {
   const { data: exams, isLoading, error } = useQuery({
     queryKey: ['exams'],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 500))
-      return mockExams
+      const { data } = await examApi.getAll()
+      return data
     },
   })
 
