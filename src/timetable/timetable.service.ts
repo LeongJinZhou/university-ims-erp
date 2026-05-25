@@ -264,9 +264,10 @@ export class TimetableService {
       })),
       lecturers: await this.prisma.lecturer.findMany({
         where: { id: { in: offerings.map(o => o.lecturerId) } },
+        include: { user: true },
       }).then(ls => ls.map(l => ({
         id: l.id,
-        name: l.name || '',
+        name: l.user?.name || '',
         maxTeachingLoad: l.maxTeachingLoad,
         availableDays: lecturerAvailability.find(a => a.lecturerId === l.id)?.availableDays || [0,1,2,3,4],
         preferredStartTime: lecturerAvailability.find(a => a.lecturerId === l.id)?.preferredStartTime || '08:00',
