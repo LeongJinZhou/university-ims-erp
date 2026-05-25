@@ -263,6 +263,8 @@ model Student {
   academicPlan      AcademicPlan?
   enrolments        Enrolment[]
   examResults       ExamResult[]
+  grades            Grade[]
+  retakeBacklog     RetakeBacklog[]
   retakePlans       RetakePlan[]
   appeals           Appeal[]
   fees              Fee[]
