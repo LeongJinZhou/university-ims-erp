@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from './ui/skeleton'
-import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
@@ -9,17 +8,6 @@ import { venueApi } from '../lib/api'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
 const TIME_SLOTS = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00']
-
-type TimetableSlot = {
-  id: string
-  dayOfWeek: number
-  startTime: string
-  endTime: string
-  courseCode: string
-  courseName: string
-  venue: string
-  lecturer: string
-}
 
 export function TimetableView() {
   const [selectedSemester, setSelectedSemester] = useState('2025-S1')
