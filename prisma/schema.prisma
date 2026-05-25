@@ -1200,6 +1200,66 @@ model NotificationTemplate {
   @@map("notification_templates")
 }
 
+model AuditTrail {
+  id          String   @id @default(cuid())
+  userId      String
+  action      String   // e.g., "STUDENT_CREATE", "ENROLMENT_DROP", "TIMETABLE_APPROVE"
+  entityType  String   // e.g., "Student", "Enrolment", "Timetable"
+  entityId    String?  // ID of affected entity
+  description String?  // Human-readable description
+  metadata    Json?    // Additional context data
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@map("audit_trails")
+}
+
+model AnalyticsSnapshot {
+  id            String   @id @default(cuid())
+  metricType    String   // e.g., "ENROLMENT_RATES", "GP_DISTRIBUTION", "REVENUE"
+  period        String   // e.g., "2026-S1", "2026-Q1"
+  data          Json     // Aggregated metrics
+  computedAt    DateTime @default(now())
+  computedBy    String?  // User ID who triggered computation
+
+  @@index([metricType, period])
+  @@map("analytics_snapshots")
+}
+  id          String              @id @default(cuid())
+  recipientId String
+  channel     NotificationChannel
+  title       String
+  body        String
+  data        Json?
+  isRead      Boolean             @default(false)
+  sentAt      DateTime            @default(now())
+  readAt      DateTime?
+
+  recipient User @relation(fields: [recipientId], references: [id])
+
+  @@index([recipientId, isRead])
+  @@map("notifications")
+}
+
+model NotificationTemplate {
+  id          String              @id @default(cuid())
+  code        String              @unique
+  title       String
+  body        String
+  channel     NotificationChannel
+  description String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@map("notification_templates")
+}
+
 enum NotificationChannel {
   PUSH
   EMAIL
