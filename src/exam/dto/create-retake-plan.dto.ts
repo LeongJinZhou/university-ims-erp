@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateRetakePlanDto {
   @IsString()
@@ -8,4 +8,8 @@ export class CreateRetakePlanDto {
   @IsString()
   @IsNotEmpty()
   projectedGraduation: string;
+
+  @IsString()
+  @IsOptional()
+  resultReleaseId?: string;
 }
