@@ -1,10 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Progress } from './ui/progress'
 import { Badge } from './ui/badge'
-import { Button } from './ui/button'
 import { Skeleton } from './ui/skeleton'
-import { GraduationCap, BookOpen, Award, AlertTriangle } from 'lucide-react'
-import type { Student, SemesterPlan, PlannedCourse, AtRiskFlag } from '../lib/types'
+import { GraduationCap, BookOpen, AlertTriangle } from 'lucide-react'
+import type { Student, SemesterPlan, AtRiskFlag } from '../lib/types'
 
 interface StudentProfileCanvasProps {
   student?: Student
