@@ -452,6 +452,39 @@ model Section {
   @@map("sections")
 }
 
+model CourseOfferingSchedule {
+  id              String   @id @default(cuid())
+  courseOfferingId String
+  preferredDays   Int[]    // [0,1,2,3,4] = Mon-Fri
+  startTimeWindow String   // "08:00"
+  endTimeWindow   String   // "18:00"
+  durationMinutes Int      // Default: 120 (2 hours)
+  requiredEquipment String[] // ["PROJECTOR", "COMPUTER_LAB"]
+  consecutiveLimit Int @default(2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id])
+
+  @@unique([courseOfferingId])
+  @@map("course_offering_schedules")
+}
+
+model MergeSession {
+  id String @id @default(cuid())
+  mergedSectionId String
+  courseOfferingId String
+  originalCourseCode String
+  originalCourseName String
+  enrolmentAdded Int
+  createdAt DateTime @default(now())
+
+  mergedSection Section @relation(fields: [mergedSectionId], references: [id])
+  courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id])
+
+  @@map("merge_sessions")
+}
+
 // =============================================
 // M05: Venue & Resource Manager
 // =============================================
