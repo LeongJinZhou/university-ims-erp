@@ -355,10 +355,12 @@ model Semester {
   isActive     Boolean      @default(false)
   createdAt    DateTime     @default(now())
 
-  offerings  CourseOffering[]
-  timetables Timetable[]
-  enrolments Enrolment[]
+  offerings    CourseOffering[]
+  timetables   Timetable[]
+  enrolments   Enrolment[]
   examTimetables ExamTimetable[]
+  invoices     Invoice[]
+  transactions Transaction[]
 
   @@map("semesters")
 }
