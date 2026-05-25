@@ -271,6 +271,7 @@ model Student {
   appeals           Appeal[]
   fees              Fee[]
   invoices          Invoice[]
+  transactions      Transaction[]
   dropRequests      DropRequest[]
 
   @@map("students")
