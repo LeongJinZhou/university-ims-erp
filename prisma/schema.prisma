@@ -79,6 +79,7 @@ model Department {
   lecturers Lecturer[] @relation("LecturerOnDepartment")
   programmes Programme[] @relation("ProgrammeOnDepartment")
   budgets    Budget[]
+  staffProfiles StaffProfile[]
 
   @@map("departments")
 }
