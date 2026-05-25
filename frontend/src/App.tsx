@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { DashboardLayout } from './components/DashboardLayout'
+import { DashboardView } from './components/DashboardView'
 import { ProgrammeDashboard } from './pages/programmes/ProgrammeDashboard'
 import { MqaPlans } from './pages/programmes/MqaPlans'
 import { Departments } from './pages/programmes/Departments'
