@@ -315,6 +315,9 @@ export class EnrolmentService {
   async processDropRequest(dropRequestId: string, action: 'APPROVE' | 'REJECT'): Promise<any> {
     const request = await this.prisma.dropRequest.findUnique({
       where: { id: dropRequestId },
+      include: {
+        student: true,
+      },
     });
 
     if (!request) {
@@ -333,10 +336,29 @@ export class EnrolmentService {
     });
 
     if (action === 'APPROVE') {
+      // Get the enrolment before dropping to get course details
+      const enrolment = await this.prisma.enrolment.findUnique({
+        where: { id: request.enrolmentId },
+        include: { courseOffering: true },
+      });
+
       await this.prisma.enrolment.update({
         where: { id: request.enrolmentId },
         data: { isDropped: true, droppedAt: new Date() },
       });
+
+      // Remove invoice item for dropped course
+      if (enrolment) {
+        try {
+          await this.billingService.removeInvoiceItemForDrop(
+            enrolment.studentId,
+            enrolment.courseOfferingId,
+            enrolment.semesterId
+          );
+        } catch (error) {
+          console.error('Billing removal failed:', error);
+        }
+      }
     }
 
     return updated;
