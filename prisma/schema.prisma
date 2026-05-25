@@ -41,6 +41,7 @@ model User {
   // Relations
   student    Student?
   lecturer   Lecturer?
+  staffProfile StaffProfile?
   notifications Notification[]
   sessions           Session[]
   reviewsGiven       PerformanceReview[] @relation("ReviewerOnPerformanceReview")
