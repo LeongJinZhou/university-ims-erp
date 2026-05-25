@@ -27,4 +27,9 @@ export class ExamController {
   ) {
     return this.examService.recordExamResult(body.studentId, body.courseOfferingId, body.grade, body.marks);
   }
+
+  @Get('students/:studentId/graduation-completeness')
+  getGraduationCompleteness(@Param('studentId') studentId: string) {
+    return this.examService.getGraduationCompleteness(studentId);
+  }
 }
