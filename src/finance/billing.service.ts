@@ -143,13 +143,13 @@ export class BillingService {
     const totalAmount = items.reduce((sum, item) => sum + item.totalAmount, 0);
 
     const transactions = await this.prisma.transaction.findMany({
-      where: { invoiceId: invoiceId, status: 'COMPLETED' },
+      where: { invoiceId: invoiceId, status: 'COMPLETED' as any },
     });
 
     const paidAmount = transactions.reduce((sum, t) => sum + t.amount, 0);
     const balance = Math.max(0, totalAmount - paidAmount);
 
-    let status = 'UNPAID';
+    let status: 'UNPAID' | 'PARTIAL' | 'PAID' = 'UNPAID';
     if (balance === 0) {
       status = 'PAID';
     } else if (paidAmount > 0) {
