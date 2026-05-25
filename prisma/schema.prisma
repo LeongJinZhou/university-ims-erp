@@ -992,6 +992,7 @@ model Invoice {
   fees         Fee[]
   invoiceItems InvoiceItem[]
   transactions Transaction[]
+  payments     Payment[]
 
   @@map("invoices")
 }
