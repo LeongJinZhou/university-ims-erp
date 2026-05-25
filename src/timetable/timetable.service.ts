@@ -221,4 +221,83 @@ export class TimetableService {
       );
     }
   }
+
+  async solveTimetable(dto: { semesterId: string; offeringIds?: string[]; useMergeLogic?: boolean }) {
+    const offerings = await this.prisma.courseOffering.findMany({
+      where: { semesterId: dto.semesterId },
+      include: {
+        course: true,
+        lecturer: true,
+        sections: true,
+      },
+    });
+
+    const rooms = await this.prisma.room.findMany({
+      include: { equipment: true },
+    });
+
+    const lecturerAvailability = await this.prisma.lecturerAvailability.findMany({
+      where: { semesterId: dto.semesterId },
+    });
+
+    const solverPayload = {
+      semesterId: dto.semesterId,
+      offerings: offerings.map(o => ({
+        id: o.id,
+        courseId: o.courseId,
+        courseCode: o.course?.code,
+        courseName: o.course?.name,
+        creditHours: o.course?.creditHours,
+        courseType: o.course?.courseType,
+        lecturerId: o.lecturerId,
+        maxCapacity: o.maxCapacity,
+        currentEnrolment: o.currentEnrolment,
+        prerequisites: [],
+      })),
+      rooms: rooms.map(r => ({
+        id: r.id,
+        code: r.code,
+        capacity: r.capacity,
+        building: '',
+        floor: r.floor,
+        equipment: r.equipment?.map(e => e.type) || [],
+      })),
+      lecturers: await this.prisma.lecturer.findMany({
+        where: { id: { in: offerings.map(o => o.lecturerId) } },
+      }).then(ls => ls.map(l => ({
+        id: l.id,
+        name: l.name || '',
+        maxTeachingLoad: l.maxTeachingLoad,
+        availableDays: lecturerAvailability.find(a => a.lecturerId === l.id)?.availableDays || [0,1,2,3,4],
+        preferredStartTime: lecturerAvailability.find(a => a.lecturerId === l.id)?.preferredStartTime || '08:00',
+        preferredEndTime: lecturerAvailability.find(a => a.lecturerId === l.id)?.preferredEndTime || '18:00',
+      }))),
+      studentGroups: [{ id: dto.semesterId, programmeId: '', studentCount: 0, enrolments: [] }],
+      timeSlots: Array.from({ length: 5 }, (_, d) => ({
+        dayOfWeek: d,
+        startTime: '08:00',
+        endTime: '10:00',
+      })),
+    };
+
+    return solverPayload;
+  }
+
+  async mergeCourses(body: { courseAId: string; courseBId: string; semesterId: string }) {
+    const equivalency = await this.prisma.courseEquivalency.findFirst({
+      where: {
+        OR: [
+          { courseAId: body.courseAId, courseBId: body.courseBId },
+          { courseAId: body.courseBId, courseBId: body.courseAId },
+        ],
+        isDeliveryMerge: true,
+      },
+    });
+
+    if (!equivalency) {
+      throw new BadRequestException('Courses are not marked as mergeable');
+    }
+
+    return { success: true, equivalencyId: equivalency.id };
+  }
 }
