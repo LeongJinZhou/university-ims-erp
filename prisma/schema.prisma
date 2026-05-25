@@ -44,6 +44,7 @@ model User {
   staffProfile     StaffProfile?
   notifications    Notification[]
   sessions         Session[]
+  auditTrails      AuditTrail[]
   reviewsGiven     PerformanceReview[] @relation("ReviewerOnPerformanceReview")
   reviewsFinalized PerformanceReview[] @relation("ReviewedByOnPerformanceReview")
   expenses         Expense[]
