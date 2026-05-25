@@ -1232,33 +1232,12 @@ model AnalyticsSnapshot {
   @@index([metricType, period])
   @@map("analytics_snapshots")
 }
-  id          String              @id @default(cuid())
-  recipientId String
-  channel     NotificationChannel
-  title       String
-  body        String
-  data        Json?
-  isRead      Boolean             @default(false)
-  sentAt      DateTime            @default(now())
-  readAt      DateTime?
 
-  recipient User @relation(fields: [recipientId], references: [id])
-
-  @@index([recipientId, isRead])
-  @@map("notifications")
-}
-
-model NotificationTemplate {
-  id          String              @id @default(cuid())
-  code        String              @unique
-  title       String
-  body        String
-  channel     NotificationChannel
-  description String?
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-
-  @@map("notification_templates")
+enum NotificationChannel {
+  PUSH
+  EMAIL
+  SMS
+  IN_APP
 }
 
 enum NotificationChannel {
