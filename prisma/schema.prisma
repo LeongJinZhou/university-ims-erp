@@ -16,7 +16,7 @@
 // ============================================
 
 generator client {
-  provider   = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -39,14 +39,14 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  student    Student?
-  lecturer   Lecturer?
-  staffProfile StaffProfile?
-  notifications Notification[]
-  sessions           Session[]
-  reviewsGiven       PerformanceReview[] @relation("ReviewerOnPerformanceReview")
-  reviewsFinalized   PerformanceReview[] @relation("ReviewedByOnPerformanceReview")
-  expenses           Expense[]
+  student          Student?
+  lecturer         Lecturer?
+  staffProfile     StaffProfile?
+  notifications    Notification[]
+  sessions         Session[]
+  reviewsGiven     PerformanceReview[] @relation("ReviewerOnPerformanceReview")
+  reviewsFinalized PerformanceReview[] @relation("ReviewedByOnPerformanceReview")
+  expenses         Expense[]
 
   @@map("users")
 }
@@ -75,23 +75,23 @@ model Department {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  faculties Faculty[] @relation("FacultyOnDepartment")
-  lecturers Lecturer[] @relation("LecturerOnDepartment")
-  programmes Programme[] @relation("ProgrammeOnDepartment")
-  budgets    Budget[]
+  faculties     Faculty[]      @relation("FacultyOnDepartment")
+  lecturers     Lecturer[]     @relation("LecturerOnDepartment")
+  programmes    Programme[]    @relation("ProgrammeOnDepartment")
+  budgets       Budget[]
   staffProfiles StaffProfile[]
 
   @@map("departments")
 }
 
 model Faculty {
-  id        String   @id @default(cuid())
-  name      String
-  code      String   @unique  // e.g., "FOCS", "FOE", "FOM"
+  id           String   @id @default(cuid())
+  name         String
+  code         String   @unique // e.g., "FOCS", "FOE", "FOM"
   departmentId String?
-  deanId    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  deanId       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   department Department? @relation("FacultyOnDepartment", fields: [departmentId], references: [id])
   programmes Programme[]
@@ -104,54 +104,54 @@ model Programme {
   id                   String       @id @default(cuid())
   facultyId            String
   departmentId         String?
-  name                 String       // e.g., "Bachelor of Computer Science"
-  code                 String       @unique  // e.g., "BCS"
+  name                 String // e.g., "Bachelor of Computer Science"
+  code                 String       @unique // e.g., "BCS"
   calendarType         CalendarType @default(STANDARD)
   totalCredits         Int
-  maxDurationSemesters Int          // Maximum allowed semesters
-  mqaRefNumber         String?      // MQA reference number
+  maxDurationSemesters Int // Maximum allowed semesters
+  mqaRefNumber         String? // MQA reference number
   isActive             Boolean      @default(true)
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
 
-  faculty     Faculty             @relation(fields: [facultyId], references: [id])
-  department  Department?         @relation("ProgrammeOnDepartment", fields: [departmentId], references: [id])
-  versions    ProgrammeVersion[]
-  courses     Course[]
-  students    Student[]
-  budgets     Budget[]
+  faculty       Faculty            @relation(fields: [facultyId], references: [id])
+  department    Department?        @relation("ProgrammeOnDepartment", fields: [departmentId], references: [id])
+  versions      ProgrammeVersion[]
+  courses       Course[]
+  students      Student[]
+  budgets       Budget[]
   feeStructures FeeStructure[]
 
   @@map("programmes")
 }
 
 enum CalendarType {
-  STANDARD       // Nov/Apr/Jul cycle
-  NON_STANDARD   // MBBS, Pharmacy — faculty-governed
+  STANDARD // Nov/Apr/Jul cycle
+  NON_STANDARD // MBBS, Pharmacy — faculty-governed
 }
 
 model ProgrammeVersion {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   programmeId   String
-  version       String   // e.g., "2025-v1"
+  version       String // e.g., "2025-v1"
   effectiveFrom DateTime
   effectiveTo   DateTime?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
 
-  programme    Programme        @relation(fields: [programmeId], references: [id])
+  programme     Programme         @relation(fields: [programmeId], references: [id])
   semesterPlans MqaSemesterPlan[]
-  students     Student[]
+  students      Student[]
 
   @@unique([programmeId, version])
   @@map("programme_versions")
 }
 
 model MqaSemesterPlan {
-  id                  String @id @default(cuid())
-  programmeVersionId  String
-  semesterNumber      Int    // 1, 2, 3, ... up to programme max
-  totalCredits        Int
+  id                 String @id @default(cuid())
+  programmeVersionId String
+  semesterNumber     Int // 1, 2, 3, ... up to programme max
+  totalCredits       Int
 
   programmeVersion ProgrammeVersion @relation(fields: [programmeVersionId], references: [id])
   courses          MqaPlanCourse[]
@@ -161,10 +161,10 @@ model MqaSemesterPlan {
 }
 
 model MqaPlanCourse {
-  id              String  @id @default(cuid())
-  semesterPlanId  String
-  courseId         String
-  isElective       Boolean @default(false)
+  id             String  @id @default(cuid())
+  semesterPlanId String
+  courseId       String
+  isElective     Boolean @default(false)
 
   semesterPlan MqaSemesterPlan @relation(fields: [semesterPlanId], references: [id])
   course       Course          @relation(fields: [courseId], references: [id])
@@ -179,7 +179,7 @@ model MqaPlanCourse {
 
 model Course {
   id          String     @id @default(cuid())
-  code        String     @unique  // e.g., "COMP301"
+  code        String     @unique // e.g., "COMP301"
   name        String
   creditHours Int
   courseType  CourseType @default(THEORY)
@@ -189,16 +189,16 @@ model Course {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
-  programme        Programme         @relation(fields: [programmeId], references: [id])
-  mqaPlanEntries   MqaPlanCourse[]
-  prerequisites    Prerequisite[]    @relation("CoursePrereqs")
-  prerequisiteFor  Prerequisite[]    @relation("PrereqCourse")
-  equivalenciesA   CourseEquivalency[] @relation("EquivCourseA")
-  equivalenciesB   CourseEquivalency[] @relation("EquivCourseB")
-  offerings        CourseOffering[]
-  examResults      ExamResult[]
-  grades           Grade[]
-  retakeBacklog    RetakeBacklog[]
+  programme       Programme           @relation(fields: [programmeId], references: [id])
+  mqaPlanEntries  MqaPlanCourse[]
+  prerequisites   Prerequisite[]      @relation("CoursePrereqs")
+  prerequisiteFor Prerequisite[]      @relation("PrereqCourse")
+  equivalenciesA  CourseEquivalency[] @relation("EquivCourseA")
+  equivalenciesB  CourseEquivalency[] @relation("EquivCourseB")
+  offerings       CourseOffering[]
+  examResults     ExamResult[]
+  grades          Grade[]
+  retakeBacklog   RetakeBacklog[]
 
   @@map("courses")
 }
@@ -213,7 +213,7 @@ enum CourseType {
 
 model Prerequisite {
   id                   String  @id @default(cuid())
-  courseId              String
+  courseId             String
   prerequisiteCourseId String
   isMandatory          Boolean @default(true)
 
@@ -225,10 +225,10 @@ model Prerequisite {
 }
 
 model CourseEquivalency {
-  id              String  @id @default(cuid())
-  courseAId        String
-  courseBId        String
-  isDeliveryMerge Boolean @default(true)  // Can be merged into single class
+  id              String   @id @default(cuid())
+  courseAId       String
+  courseBId       String
+  isDeliveryMerge Boolean  @default(true) // Can be merged into single class
   approvedBy      String?
   createdAt       DateTime @default(now())
 
@@ -246,35 +246,35 @@ model CourseEquivalency {
 model Student {
   id                  String       @id @default(cuid())
   userId              String       @unique
-  studentId           String       @unique  // e.g., "University2025001"
+  studentId           String       @unique // e.g., "University2025001"
   programmeId         String
   programmeVersionId  String
   intakePeriod        IntakePeriod
   intakeYear          Int
-  intakeAnchor        String       // e.g., "202510"
+  intakeAnchor        String // e.g., "202510"
   currentSemester     Int          @default(1)
   totalCreditsEarned  Int          @default(0)
   cumulativeGpa       Float        @default(0.0)
   planStatus          PlanStatus   @default(ON_TRACK)
-  projectedGraduation String?      // e.g., "2028-S2"
+  projectedGraduation String? // e.g., "2028-S2"
   isActive            Boolean      @default(true)
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
 
-  user              User              @relation(fields: [userId], references: [id])
-  programme         Programme         @relation(fields: [programmeId], references: [id])
-  programmeVersion  ProgrammeVersion  @relation(fields: [programmeVersionId], references: [id])
-  academicPlan      AcademicPlan?
-  enrolments        Enrolment[]
-  examResults       ExamResult[]
-  grades            Grade[]
-  retakeBacklog     RetakeBacklog[]
-  retakePlans       RetakePlan[]
-  appeals           Appeal[]
-  fees              Fee[]
-  invoices          Invoice[]
-  transactions      Transaction[]
-  dropRequests      DropRequest[]
+  user             User             @relation(fields: [userId], references: [id])
+  programme        Programme        @relation(fields: [programmeId], references: [id])
+  programmeVersion ProgrammeVersion @relation(fields: [programmeVersionId], references: [id])
+  academicPlan     AcademicPlan?
+  enrolments       Enrolment[]
+  examResults      ExamResult[]
+  grades           Grade[]
+  retakeBacklog    RetakeBacklog[]
+  retakePlans      RetakePlan[]
+  appeals          Appeal[]
+  fees             Fee[]
+  invoices         Invoice[]
+  transactions     Transaction[]
+  dropRequests     DropRequest[]
 
   @@map("students")
 }
@@ -295,7 +295,7 @@ model AcademicPlan {
   id                  String     @id @default(cuid())
   studentId           String     @unique
   planStatus          PlanStatus @default(ON_TRACK)
-  originalGraduation  String     // e.g., "2028-S2"
+  originalGraduation  String // e.g., "2028-S2"
   projectedGraduation String
   hasExtension        Boolean    @default(false)
   lastRevisedAt       DateTime   @default(now())
@@ -310,7 +310,7 @@ model SemesterPlan {
   id               String  @id @default(cuid())
   academicPlanId   String
   semesterNumber   Int
-  calendarSemester String  // e.g., "2026-S1"
+  calendarSemester String // e.g., "2026-S1"
   totalCredits     Int
   isExtension      Boolean @default(false)
 
@@ -322,14 +322,14 @@ model SemesterPlan {
 }
 
 model PlannedCourse {
-  id              String  @id @default(cuid())
-  semesterPlanId  String
-  courseId         String
-  courseCode       String
-  creditHours     Int
-  isRetake        Boolean @default(false)
-  isDeferred      Boolean @default(false)
-  gradeStatus     GradeStatus?
+  id             String       @id @default(cuid())
+  semesterPlanId String
+  courseId       String
+  courseCode     String
+  creditHours    Int
+  isRetake       Boolean      @default(false)
+  isDeferred     Boolean      @default(false)
+  gradeStatus    GradeStatus?
 
   semesterPlan SemesterPlan @relation(fields: [semesterPlanId], references: [id])
 
@@ -349,50 +349,50 @@ enum GradeStatus {
 
 model Semester {
   id           String       @id @default(cuid())
-  label        String       @unique  // e.g., "2026-S1"
+  label        String       @unique // e.g., "2026-S1"
   year         Int
-  semesterNum  Int          // 1, 2, or 3
+  semesterNum  Int // 1, 2, or 3
   semesterType SemesterType
   startDate    DateTime
   endDate      DateTime
   isActive     Boolean      @default(false)
   createdAt    DateTime     @default(now())
 
-  offerings    CourseOffering[]
-  timetables   Timetable[]
-  enrolments   Enrolment[]
+  offerings      CourseOffering[]
+  timetables     Timetable[]
+  enrolments     Enrolment[]
   examTimetables ExamTimetable[]
-  invoices     Invoice[]
-  transactions Transaction[]
+  invoices       Invoice[]
+  transactions   Transaction[]
 
   @@map("semesters")
 }
 
 enum SemesterType {
-  LONG   // Max 20 credits
-  SHORT  // Max 10 credits
+  LONG // Max 20 credits
+  SHORT // Max 10 credits
 }
 
 model CourseOffering {
-  id           String  @id @default(cuid())
-  courseId      String
-  semesterId   String
-  lecturerId   String
-  maxCapacity  Int
-  currentEnrolment Int @default(0)
-  isConfirmed  Boolean @default(false)
-  createdAt    DateTime @default(now())
+  id               String   @id @default(cuid())
+  courseId         String
+  semesterId       String
+  lecturerId       String
+  maxCapacity      Int
+  currentEnrolment Int      @default(0)
+  isConfirmed      Boolean  @default(false)
+  createdAt        DateTime @default(now())
 
-  course     Course     @relation(fields: [courseId], references: [id])
-  semester   Semester   @relation(fields: [semesterId], references: [id])
-  lecturer   Lecturer   @relation(fields: [lecturerId], references: [id])
-  sections   Section[]
-  enrolments Enrolment[]
-  examResults ExamResult[]
-  timetableSlots TimetableSlot[]
+  course             Course                  @relation(fields: [courseId], references: [id])
+  semester           Semester                @relation(fields: [semesterId], references: [id])
+  lecturer           Lecturer                @relation(fields: [lecturerId], references: [id])
+  sections           Section[]
+  enrolments         Enrolment[]
+  examResults        ExamResult[]
+  timetableSlots     TimetableSlot[]
   examTimetableSlots ExamTimetableSlot[]
-  schedule   CourseOfferingSchedule?
-  mergeSessions MergeSession[]
+  schedule           CourseOfferingSchedule?
+  mergeSessions      MergeSession[]
 
   @@unique([courseId, semesterId])
   @@map("course_offerings")
@@ -423,22 +423,22 @@ enum ApprovalState {
 }
 
 model TimetableSlot {
-  id              String     @id @default(cuid())
-  timetableId     String
+  id               String         @id @default(cuid())
+  timetableId      String
   courseOfferingId String
-  sectionId       String
-  venueId         String
-  dayOfWeek       Int        // 0=Mon, 4=Fri
-  startTime       String     // "08:00"
-  endTime         String     // "10:00"
-  status          ExamSlotStatus @default(SCHEDULED)
-  isMergedClass   Boolean    @default(false)
+  sectionId        String
+  venueId          String
+  dayOfWeek        Int // 0=Mon, 4=Fri
+  startTime        String // "08:00"
+  endTime          String // "10:00"
+  status           ExamSlotStatus @default(SCHEDULED)
+  isMergedClass    Boolean        @default(false)
 
-  timetable     Timetable     @relation(fields: [timetableId], references: [id])
+  timetable      Timetable      @relation(fields: [timetableId], references: [id])
   courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id])
-  section       Section        @relation(fields: [sectionId], references: [id])
-  venue         Room           @relation(fields: [venueId], references: [id])
-  cancellations Cancellation[]
+  section        Section        @relation(fields: [sectionId], references: [id])
+  venue          Room           @relation(fields: [venueId], references: [id])
+  cancellations  Cancellation[]
 
   @@map("timetable_slots")
 }
@@ -450,13 +450,13 @@ enum SlotStatus {
 }
 
 model Section {
-  id              String  @id @default(cuid())
-  courseOfferingId String
-  sectionCode     String  // e.g., "A", "B"
-  combinedHeadcount Int   @default(0)
-  isMerged        Boolean @default(false)
+  id                String  @id @default(cuid())
+  courseOfferingId  String
+  sectionCode       String // e.g., "A", "B"
+  combinedHeadcount Int     @default(0)
+  isMerged          Boolean @default(false)
 
-  courseOffering  CourseOffering @relation(fields: [courseOfferingId], references: [id])
+  courseOffering CourseOffering  @relation(fields: [courseOfferingId], references: [id])
   timetableSlots TimetableSlot[]
   enrolments     Enrolment[]
   mergeSessions  MergeSession[]
@@ -466,16 +466,16 @@ model Section {
 }
 
 model CourseOfferingSchedule {
-  id              String   @id @default(cuid())
-  courseOfferingId String
-  preferredDays   Int[]    // [0,1,2,3,4] = Mon-Fri
-  startTimeWindow String   // "08:00"
-  endTimeWindow   String   // "18:00"
-  durationMinutes Int      // Default: 120 (2 hours)
+  id                String   @id @default(cuid())
+  courseOfferingId  String
+  preferredDays     Int[] // [0,1,2,3,4] = Mon-Fri
+  startTimeWindow   String // "08:00"
+  endTimeWindow     String // "18:00"
+  durationMinutes   Int // Default: 120 (2 hours)
   requiredEquipment String[] // ["PROJECTOR", "COMPUTER_LAB"]
-  consecutiveLimit Int @default(2)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  consecutiveLimit  Int      @default(2)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id])
 
@@ -484,15 +484,15 @@ model CourseOfferingSchedule {
 }
 
 model MergeSession {
-  id String @id @default(cuid())
-  mergedSectionId String
-  courseOfferingId String
+  id                 String   @id @default(cuid())
+  mergedSectionId    String
+  courseOfferingId   String
   originalCourseCode String
   originalCourseName String
-  enrolmentAdded Int
-  createdAt DateTime @default(now())
+  enrolmentAdded     Int
+  createdAt          DateTime @default(now())
 
-  mergedSection Section @relation(fields: [mergedSectionId], references: [id])
+  mergedSection  Section        @relation(fields: [mergedSectionId], references: [id])
   courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id])
 
   @@map("merge_sessions")
@@ -508,7 +508,7 @@ model Venue {
   building String
   floor    Int
 
-  rooms Room[]
+  rooms              Room[]
   examTimetableSlots ExamTimetableSlot[]
 
   @@map("venues")
@@ -517,18 +517,18 @@ model Venue {
 model Room {
   id         String  @id @default(cuid())
   venueId    String
-  code       String  @unique  // e.g., "B3-301"
+  code       String  @unique // e.g., "B3-301"
   name       String
   capacity   Int
   isActive   Boolean @default(true)
   floorPlanX Float?
   floorPlanY Float?
 
-  venue      Venue           @relation(fields: [venueId], references: [id])
-  equipment  RoomEquipment[]
-  timetableSlots TimetableSlot[]
+  venue             Venue              @relation(fields: [venueId], references: [id])
+  equipment         RoomEquipment[]
+  timetableSlots    TimetableSlot[]
   maintenanceBlocks MaintenanceBlock[]
-  bookings           RoomBooking[]
+  bookings          RoomBooking[]
 
   @@map("rooms")
 }
@@ -536,8 +536,8 @@ model Room {
 model RoomEquipment {
   id       String @id @default(cuid())
   roomId   String
-  type     String  // "PROJECTOR", "COMPUTER_LAB", "WHITEBOARD", "AV_SYSTEM"
-  quantity Int     @default(1)
+  type     String // "PROJECTOR", "COMPUTER_LAB", "WHITEBOARD", "AV_SYSTEM"
+  quantity Int    @default(1)
 
   room Room @relation(fields: [roomId], references: [id])
 
@@ -545,15 +545,15 @@ model RoomEquipment {
 }
 
 model RoomBooking {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   roomId    String
   date      DateTime // YYYY-MM-DD stored as DateTime
-  startTime String   // HH:MM format
-  endTime   String   // HH:MM format
+  startTime String // HH:MM format
+  endTime   String // HH:MM format
   purpose   String
   bookedBy  String
   status    BookingStatus @default(CONFIRMED)
-  createdAt DateTime @default(now())
+  createdAt DateTime      @default(now())
 
   room Room @relation(fields: [roomId], references: [id])
 
@@ -567,13 +567,13 @@ enum BookingStatus {
 }
 
 model MaintenanceBlock {
-  id        String   @id @default(cuid())
-  roomId    String
-  startDate DateTime
-  endDate   DateTime
-  reason    String
+  id          String   @id @default(cuid())
+  roomId      String
+  startDate   DateTime
+  endDate     DateTime
+  reason      String
   scheduledBy String
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
 
   room Room @relation(fields: [roomId], references: [id])
 
@@ -585,21 +585,21 @@ model MaintenanceBlock {
 // =============================================
 
 model ExamResult {
-  id              String      @id @default(cuid())
-  studentId       String
+  id               String      @id @default(cuid())
+  studentId        String
   courseOfferingId String
   courseId         String
-  grade           String      // e.g., "A", "B+", "F"
-  gradePoint      Float
-  gradeStatus     GradeStatus
-  marks           Float?
-  releasedAt      DateTime    @default(now())
-  releasedBy      String      // Exam Division user ID
+  grade            String // e.g., "A", "B+", "F"
+  gradePoint       Float
+  gradeStatus      GradeStatus
+  marks            Float?
+  releasedAt       DateTime    @default(now())
+  releasedBy       String // Exam Division user ID
 
-  student       Student        @relation(fields: [studentId], references: [id])
+  student        Student        @relation(fields: [studentId], references: [id])
   courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id])
-  course        Course         @relation(fields: [courseId], references: [id])
-  gradeRecord   Grade?
+  course         Course         @relation(fields: [courseId], references: [id])
+  gradeRecord    Grade?
 
   @@unique([studentId, courseOfferingId])
   @@map("exam_results")
@@ -612,15 +612,15 @@ model Grade {
   courseId        String
   examResultId    String   @unique
   attemptNumber   Int      @default(1)
-  grade           String   // e.g., "A", "B+", "F"
+  grade           String // e.g., "A", "B+", "F"
   gradePoint      Float
   creditHours     Int
   isRetakeAttempt Boolean  @default(false)
   recordedAt      DateTime @default(now())
-  recordedBy      String   // Exam Division user ID
+  recordedBy      String // Exam Division user ID
 
-  student   Student   @relation(fields: [studentId], references: [id])
-  course    Course    @relation(fields: [courseId], references: [id])
+  student    Student    @relation(fields: [studentId], references: [id])
+  course     Course     @relation(fields: [courseId], references: [id])
   examResult ExamResult @relation(fields: [examResultId], references: [id])
 
   @@index([studentId, courseId])
@@ -629,29 +629,29 @@ model Grade {
 
 // M06: RetakeBacklog for tracking failed subjects that need retake
 model RetakeBacklog {
-  id                String   @id @default(cuid())
+  id                String       @id @default(cuid())
   studentId         String
   courseId          String
   courseCode        String
   creditHours       Int
-  failedSemester    String   // Calendar semester when failed (e.g., "2026-S2")
-  failedAt          DateTime @default(now())
+  failedSemester    String // Calendar semester when failed (e.g., "2026-S2")
+  failedAt          DateTime     @default(now())
   status            RetakeStatus @default(PENDING)
-  scheduledSemester String?  // Calendar semester when scheduled (e.g., "2027-S1")
-  scheduledInPlanId String?  // Reference to PlannedCourse when scheduled
+  scheduledSemester String? // Calendar semester when scheduled (e.g., "2027-S1")
+  scheduledInPlanId String? // Reference to PlannedCourse when scheduled
 
-  student   Student   @relation(fields: [studentId], references: [id])
-  course    Course    @relation(fields: [courseId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+  course  Course  @relation(fields: [courseId], references: [id])
 
   @@unique([studentId, courseId, failedSemester])
   @@map("retake_backlog")
 }
 
 enum RetakeStatus {
-  PENDING     // Failed, needs to be scheduled
-  SCHEDULED   // Assigned to a semester plan
-  COMPLETED   // Successfully retaken
-  EXEMPTED    // Waived via appeal
+  PENDING // Failed, needs to be scheduled
+  SCHEDULED // Assigned to a semester plan
+  COMPLETED // Successfully retaken
+  EXEMPTED // Waived via appeal
 }
 
 model RetakePlan {
@@ -663,20 +663,20 @@ model RetakePlan {
   reviewedBy          String?
   approvedBy          String?
 
-  student      Student             @relation(fields: [studentId], references: [id])
+  student       Student                  @relation(fields: [studentId], references: [id])
   failedCourses RetakeCourse[]
-  revisions    RetakeSemesterRevision[]
+  revisions     RetakeSemesterRevision[]
 
   @@map("retake_plans")
 }
 
 model RetakeCourse {
-  id                    String  @id @default(cuid())
-  retakePlanId          String
-  courseId               String
-  courseCode             String
-  creditHours           Int
-  failedInSemester      String
+  id                      String  @id @default(cuid())
+  retakePlanId            String
+  courseId                String
+  courseCode              String
+  creditHours             Int
+  failedInSemester        String
   scheduledRetakeSemester String?
 
   retakePlan RetakePlan @relation(fields: [retakePlanId], references: [id])
@@ -685,12 +685,12 @@ model RetakeCourse {
 }
 
 model RetakeSemesterRevision {
-  id               String @id @default(cuid())
+  id               String   @id @default(cuid())
   retakePlanId     String
   semesterNumber   Int
   calendarSemester String
-  addedCourses     String[]    // Course IDs (retakes)
-  deferredCourses  String[]    // Course IDs (pushed forward)
+  addedCourses     String[] // Course IDs (retakes)
+  deferredCourses  String[] // Course IDs (pushed forward)
   totalCredits     Int
 
   retakePlan RetakePlan @relation(fields: [retakePlanId], references: [id])
@@ -699,36 +699,36 @@ model RetakeSemesterRevision {
 }
 
 model ExamTimetable {
-  id            String   @id @default(cuid())
-  semesterId    String
-  status        ExamTimetableStatus @default(DRAFT)
-  generatedAt   DateTime @default(now())
-  approvedBy    String?
-  approvedAt    DateTime?
+  id          String              @id @default(cuid())
+  semesterId  String
+  status      ExamTimetableStatus @default(DRAFT)
+  generatedAt DateTime            @default(now())
+  approvedBy  String?
+  approvedAt  DateTime?
 
-  semester      Semester @relation(fields: [semesterId], references: [id])
-  slots         ExamTimetableSlot[]
+  semester Semester            @relation(fields: [semesterId], references: [id])
+  slots    ExamTimetableSlot[]
 
   @@map("exam_timetables")
 }
 
 model ExamTimetableSlot {
-  id              String   @id @default(cuid())
-  examTimetableId String
-  courseOfferingId String
-  venueId         String
-  invigilatorId   String
-  date            DateTime // YYYY-MM-DD stored as DateTime
-  startTime       String   // HH:MM format
-  endTime         String   // HH:MM format
-  durationMinutes Int
+  id                 String         @id @default(cuid())
+  examTimetableId    String
+  courseOfferingId   String
+  venueId            String
+  invigilatorId      String
+  date               DateTime // YYYY-MM-DD stored as DateTime
+  startTime          String // HH:MM format
+  endTime            String // HH:MM format
+  durationMinutes    Int
   expectedAttendance Int
-  status          ExamSlotStatus @default(SCHEDULED)
+  status             ExamSlotStatus @default(SCHEDULED)
 
-  examTimetable   ExamTimetable @relation(fields: [examTimetableId], references: [id])
-  courseOffering  CourseOffering @relation(fields: [courseOfferingId], references: [id])
-  venue           Venue @relation(fields: [venueId], references: [id])
-  invigilator     Lecturer @relation(fields: [invigilatorId], references: [id])
+  examTimetable  ExamTimetable  @relation(fields: [examTimetableId], references: [id])
+  courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id])
+  venue          Venue          @relation(fields: [venueId], references: [id])
+  invigilator    Lecturer       @relation(fields: [invigilatorId], references: [id])
 
   @@map("exam_timetable_slots")
 }
@@ -751,34 +751,34 @@ enum ExamSlotStatus {
 // =============================================
 
 model Enrolment {
-  id              String   @id @default(cuid())
-  studentId       String
-  semesterId      String
+  id               String    @id @default(cuid())
+  studentId        String
+  semesterId       String
   courseOfferingId String
-  sectionId       String
-  enrolledAt      DateTime @default(now())
-  isDropped       Boolean  @default(false)
-  droppedAt       DateTime?
+  sectionId        String
+  enrolledAt       DateTime  @default(now())
+  isDropped        Boolean   @default(false)
+  droppedAt        DateTime?
 
-  student       Student        @relation(fields: [studentId], references: [id])
-  semester      Semester       @relation(fields: [semesterId], references: [id])
+  student        Student        @relation(fields: [studentId], references: [id])
+  semester       Semester       @relation(fields: [semesterId], references: [id])
   courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id])
-  section       Section        @relation(fields: [sectionId], references: [id])
+  section        Section        @relation(fields: [sectionId], references: [id])
 
   @@unique([studentId, courseOfferingId])
   @@map("enrolments")
 }
 
 model DropRequest {
-  id                    String   @id @default(cuid())
-  studentId             String
-  enrolmentId           String
-  courseCode             String
-  reason                String
-  aiImpactPreview       Json?    // Stored as JSON
-  studentAcknowledged   Boolean  @default(false)
-  status                DropRequestStatus @default(PENDING)
-  createdAt             DateTime @default(now())
+  id                  String            @id @default(cuid())
+  studentId           String
+  enrolmentId         String
+  courseCode          String
+  reason              String
+  aiImpactPreview     Json? // Stored as JSON
+  studentAcknowledged Boolean           @default(false)
+  status              DropRequestStatus @default(PENDING)
+  createdAt           DateTime          @default(now())
 
   student Student @relation(fields: [studentId], references: [id])
 
@@ -801,20 +801,20 @@ model Lecturer {
   staffId         String       @unique
   facultyId       String
   departmentId    String?
-  department      Department? @relation("LecturerOnDepartment", fields: [departmentId], references: [id])
+  department      Department?  @relation("LecturerOnDepartment", fields: [departmentId], references: [id])
   contractType    ContractType @default(FULL_TIME)
-  maxTeachingLoad Int          // Max credit hours per semester
+  maxTeachingLoad Int // Max credit hours per semester
   isActive        Boolean      @default(true)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 
-  user           User                @relation(fields: [userId], references: [id])
-  faculty        Faculty             @relation(fields: [facultyId], references: [id])
-  availability   LecturerAvailability[]
-  leaveRecords   LeaveRecord[]
-  offerings      CourseOffering[]
-  cancellations  Cancellation[]
-  performanceReviews PerformanceReview[] @relation("LecturerOnPerformanceReview")
+  user               User                   @relation(fields: [userId], references: [id])
+  faculty            Faculty                @relation(fields: [facultyId], references: [id])
+  availability       LecturerAvailability[]
+  leaveRecords       LeaveRecord[]
+  offerings          CourseOffering[]
+  cancellations      Cancellation[]
+  performanceReviews PerformanceReview[]    @relation("LecturerOnPerformanceReview")
   invigilatedExams   ExamTimetableSlot[]
 
   @@map("lecturers")
@@ -830,10 +830,10 @@ model LecturerAvailability {
   id                  String @id @default(cuid())
   lecturerId          String
   semesterId          String
-  availableDays       Int[]    // [0,1,2,3,4] = Mon-Fri
-  preferredStartTime  String   @default("08:00")
-  preferredEndTime    String   @default("18:00")
-  maxConsecutiveHours Int      @default(2)
+  availableDays       Int[] // [0,1,2,3,4] = Mon-Fri
+  preferredStartTime  String @default("08:00")
+  preferredEndTime    String @default("18:00")
+  maxConsecutiveHours Int    @default(2)
 
   lecturer Lecturer @relation(fields: [lecturerId], references: [id])
 
@@ -869,24 +869,24 @@ enum LeaveStatus {
 }
 
 model PerformanceReview {
-  id              String   @id @default(cuid())
+  id              String       @id @default(cuid())
   lecturerId      String
-  reviewPeriod    String   // e.g., "2024-H1", "2024-H2", "2024-Full"
-  reviewDate      DateTime @default(now())
-  reviewerId      String   // HR or Head of Department
-  teachingScore   Int?     // 1-5 scale
-  researchScore   Int?     // 1-5 scale
-  serviceScore    Int?     // 1-5 scale
-  leadershipScore Int?     // 1-5 scale
-  overallScore    Float?   // Calculated average
+  reviewPeriod    String // e.g., "2024-H1", "2024-H2", "2024-Full"
+  reviewDate      DateTime     @default(now())
+  reviewerId      String // HR or Head of Department
+  teachingScore   Int? // 1-5 scale
+  researchScore   Int? // 1-5 scale
+  serviceScore    Int? // 1-5 scale
+  leadershipScore Int? // 1-5 scale
+  overallScore    Float? // Calculated average
   comments        String?
   status          ReviewStatus @default(DRAFT)
   reviewedAt      DateTime?
-  reviewedById    String?  // Who actually reviewed/finalized
+  reviewedById    String? // Who actually reviewed/finalized
 
-  lecturer Lecturer @relation("LecturerOnPerformanceReview", fields: [lecturerId], references: [id])
-  reviewer User @relation("ReviewerOnPerformanceReview", fields: [reviewerId], references: [id])
-  reviewedBy User? @relation("ReviewedByOnPerformanceReview", fields: [reviewedById], references: [id])
+  lecturer   Lecturer @relation("LecturerOnPerformanceReview", fields: [lecturerId], references: [id])
+  reviewer   User     @relation("ReviewerOnPerformanceReview", fields: [reviewerId], references: [id])
+  reviewedBy User?    @relation("ReviewedByOnPerformanceReview", fields: [reviewedById], references: [id])
 
   @@map("performance_reviews")
 }
@@ -899,12 +899,12 @@ enum ReviewStatus {
 }
 
 model Cancellation {
-  id               String   @id @default(cuid())
-  timetableSlotId  String
-  lecturerId       String
-  reason           String
-  cancelledAt      DateTime @default(now())
-  replacementSlots Json?    // Ranked replacement options as JSON
+  id                    String   @id @default(cuid())
+  timetableSlotId       String
+  lecturerId            String
+  reason                String
+  cancelledAt           DateTime @default(now())
+  replacementSlots      Json? // Ranked replacement options as JSON
   selectedReplacementId String?
 
   timetableSlot TimetableSlot @relation(fields: [timetableSlotId], references: [id])
@@ -918,19 +918,19 @@ model Cancellation {
 // =============================================
 
 model StaffProfile {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  staffId       String   @unique
-  departmentId  String?
-  position      String
-  employmentType EmploymentType @default(FULL_TIME)
-  joinDate      DateTime @default(now())
-  salary        Float?
-  bankAccount   String?
+  id               String         @id @default(cuid())
+  userId           String         @unique
+  staffId          String         @unique
+  departmentId     String?
+  position         String
+  employmentType   EmploymentType @default(FULL_TIME)
+  joinDate         DateTime       @default(now())
+  salary           Float?
+  bankAccount      String?
   emergencyContact String?
-  qualifications String[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  qualifications   String[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
   user       User        @relation(fields: [userId], references: [id])
   department Department? @relation(fields: [departmentId], references: [id])
@@ -976,20 +976,20 @@ enum FeeType {
 }
 
 model Invoice {
-  id          String        @id @default(cuid())
-  studentId   String
-  semesterId  String
-  invoiceNumber String     @unique
-  totalAmount Float
-  paidAmount  Float         @default(0)
-  balance     Float
-  status      InvoiceStatus @default(UNPAID)
-  dueDate     DateTime
-  issuedAt    DateTime      @default(now())
-  generatedBy String?
+  id            String        @id @default(cuid())
+  studentId     String
+  semesterId    String
+  invoiceNumber String        @unique
+  totalAmount   Float
+  paidAmount    Float         @default(0)
+  balance       Float
+  status        InvoiceStatus @default(UNPAID)
+  dueDate       DateTime
+  issuedAt      DateTime      @default(now())
+  generatedBy   String?
 
-  student      Student      @relation(fields: [studentId], references: [id])
-  semester     Semester     @relation(fields: [semesterId], references: [id])
+  student      Student       @relation(fields: [studentId], references: [id])
+  semester     Semester      @relation(fields: [semesterId], references: [id])
   fees         Fee[]
   invoiceItems InvoiceItem[]
   transactions Transaction[]
@@ -999,15 +999,15 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   invoiceId   String
   description String
   feeType     FeeType
   creditHours Int?
-  unitAmount  Float    // Per credit hour rate or fixed amount
-  quantity    Int      @default(1)
+  unitAmount  Float // Per credit hour rate or fixed amount
+  quantity    Int     @default(1)
   totalAmount Float
-  referenceId String?  // References courseOfferingId or other entity
+  referenceId String? // References courseOfferingId or other entity
 
   invoice Invoice @relation(fields: [invoiceId], references: [id])
 
@@ -1015,7 +1015,7 @@ model InvoiceItem {
 }
 
 model Transaction {
-  id          String   @id @default(cuid())
+  id          String            @id @default(cuid())
   invoiceId   String
   studentId   String
   semesterId  String
@@ -1026,10 +1026,10 @@ model Transaction {
   reference   String            @unique
   remarks     String?
   processedAt DateTime          @default(now())
-  processedBy String?           // User ID
+  processedBy String? // User ID
 
-  invoice Invoice @relation(fields: [invoiceId], references: [id])
-  student Student @relation(fields: [studentId], references: [id])
+  invoice  Invoice  @relation(fields: [invoiceId], references: [id])
+  student  Student  @relation(fields: [studentId], references: [id])
   semester Semester @relation(fields: [semesterId], references: [id])
 
   @@map("transactions")
@@ -1086,79 +1086,79 @@ enum PaymentStatus {
 }
 
 model FeeStructure {
-  id          String   @id @default(cuid())
-  programmeId String
-  academicYear Int    // e.g., 2024 for 2024-2025 academic year
-  feeType     FeeType
-  amount      Float
-  currency    String   @default("MYR")
-  description String?
-  creditHours Int?
+  id           String  @id @default(cuid())
+  programmeId  String
+  academicYear Int // e.g., 2024 for 2024-2025 academic year
+  feeType      FeeType
+  amount       Float
+  currency     String  @default("MYR")
+  description  String?
+  creditHours  Int?
 
-  programme   Programme @relation(fields: [programmeId], references: [id])
+  programme Programme @relation(fields: [programmeId], references: [id])
 
   @@unique([programmeId, academicYear, feeType])
   @@map("fee_structures")
 }
 
 model Budget {
-  id            String   @id @default(cuid())
-  departmentId  String?  // Optional: if not set, it's a university-wide budget
-  programmeId   String?  // Optional: if not set, it's for the whole department or university
-  academicYear  Int      // e.g., 2024 for 2024-2025 fiscal year
-  totalAmount   Float
-  currency      String   @default("MYR")
-  description   String?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(cuid())
+  departmentId String? // Optional: if not set, it's a university-wide budget
+  programmeId  String? // Optional: if not set, it's for the whole department or university
+  academicYear Int // e.g., 2024 for 2024-2025 fiscal year
+  totalAmount  Float
+  currency     String   @default("MYR")
+  description  String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  department  Department? @relation(fields: [departmentId], references: [id])
-  programme   Programme? @relation(fields: [programmeId], references: [id])
-  lines       BudgetLine[]
+  department Department?  @relation(fields: [departmentId], references: [id])
+  programme  Programme?   @relation(fields: [programmeId], references: [id])
+  lines      BudgetLine[]
 
   @@map("budgets")
 }
 
 model BudgetLine {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   budgetId    String
   description String
   amount      Float
-  currency    String   @default("MYR")
-  spentAmount Float    @default(0)
+  currency    String    @default("MYR")
+  spentAmount Float     @default(0)
   startDate   DateTime?
   endDate     DateTime?
 
-  budget Budget @relation(fields: [budgetId], references: [id])
+  budget   Budget    @relation(fields: [budgetId], references: [id])
   expenses Expense[]
 
   @@map("budget_lines")
 }
 
 model FinancialReport {
-  id            String   @id @default(cuid())
-  reportType    String   // e.g., "REVENUE", "EXPENSES", "BALANCE_SHEET", "CASH_FLOW"
-  academicYear  Int
-  generatedAt   DateTime @default(now())
-  generatedBy   String   // User ID of who generated the report
-  data          Json?    // The report data in JSON format
-  fileUrl       String?  // URL to exported file (PDF/Excel) if applicable
+  id           String   @id @default(cuid())
+  reportType   String // e.g., "REVENUE", "EXPENSES", "BALANCE_SHEET", "CASH_FLOW"
+  academicYear Int
+  generatedAt  DateTime @default(now())
+  generatedBy  String // User ID of who generated the report
+  data         Json? // The report data in JSON format
+  fileUrl      String? // URL to exported file (PDF/Excel) if applicable
 
   @@map("financial_reports")
 }
 
 model Expense {
-  id           String      @id @default(cuid())
+  id           String   @id @default(cuid())
   budgetLineId String
   amount       Float
   description  String
-  expenseDate  DateTime    @default(now())
+  expenseDate  DateTime @default(now())
   incurredBy   String
   receiptUrl   String?
-  status       String      @default("PENDING") // PENDING, APPROVED, REIMBURSED, REJECTED
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  status       String   @default("PENDING") // PENDING, APPROVED, REIMBURSED, REJECTED
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   budgetLine     BudgetLine @relation(fields: [budgetLineId], references: [id])
   incurredByUser User       @relation(fields: [incurredBy], references: [id])
@@ -1188,14 +1188,14 @@ model Notification {
 }
 
 model NotificationTemplate {
-  id        String   @id @default(cuid())
-  code      String   @unique
-  title     String
-  body      String
-  channel   NotificationChannel
+  id          String              @id @default(cuid())
+  code        String              @unique
+  title       String
+  body        String
+  channel     NotificationChannel
   description String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
 
   @@map("notification_templates")
 }
@@ -1214,7 +1214,7 @@ model Appeal {
   semesterId          String
   reason              String
   supportingDocuments String[]
-  aiAssessment        Json?        // AI pre-assessment stored as JSON
+  aiAssessment        Json? // AI pre-assessment stored as JSON
   status              AppealStatus @default(PENDING)
   reviewedBy          String?
   approvedBy          String?
@@ -1253,20 +1253,20 @@ model Session {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@map("sessions")
 }
 
 model DocumentEmbedding {
-  id        String   @id @default(cuid())
-  sourceType String  // "course", "mqa_doc", "programme"
-  sourceId  String
-  content   String
+  id         String   @id @default(cuid())
+  sourceType String // "course", "mqa_doc", "programme"
+  sourceId   String
+  content    String
   // vector   Unsupported("vector(1536)")?  // Enable when pgvector is active
-  metadata  Json?
-  createdAt DateTime @default(now())
+  metadata   Json?
+  createdAt  DateTime @default(now())
 
   @@index([sourceType, sourceId])
   @@map("document_embeddings")
