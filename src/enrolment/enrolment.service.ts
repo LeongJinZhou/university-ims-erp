@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { BillingService } from '../finance/billing.service';
 import { EnrolCourseDto } from './dto/enrol-course.dto';
 import { CreateDropRequestDto } from './dto/create-drop-request.dto';
 import { SemesterType } from '@prisma/client';
