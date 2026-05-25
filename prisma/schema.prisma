@@ -363,6 +363,7 @@ model Semester {
   enrolments   Enrolment[]
   examTimetables ExamTimetable[]
   invoices     Invoice[]
+  transactions Transaction[]
 
   @@map("semesters")
 }
