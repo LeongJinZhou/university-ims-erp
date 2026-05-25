@@ -40,6 +40,9 @@ export const venueApi = {
 export const examApi = {
   getAll: () => request('/exam/retake-plans'),
   create: (data: any) => post('/exam/retake-plans', data),
+  getGraduationCompleteness: (studentId: string) => request(`/exam/student/${studentId}/graduation-completeness`),
+  getRetakePlan: (planId: string) => request(`/exam/retake-plans/${planId}`),
+  getStudentRetakePlans: (studentId: string) => request(`/exam/student/${studentId}/retake-plans`),
 }
 
 export const enrolmentApi = {
