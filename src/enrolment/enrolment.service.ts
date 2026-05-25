@@ -87,7 +87,7 @@ export class EnrolmentService {
       throw new BadRequestException('No available section for this course');
     }
 
-    return this.prisma.enrolment.create({
+    const enrolment = await this.prisma.enrolment.create({
       data: {
         studentId,
         semesterId: offering.semesterId,
@@ -95,6 +95,20 @@ export class EnrolmentService {
         sectionId: section.id,
       },
     });
+
+    // Generate invoice item for the enrollment
+    try {
+      await this.billingService.generateInvoiceItemForEnrollment(
+        studentId,
+        courseOfferingId,
+        offering.semesterId
+      );
+    } catch (error) {
+      // Log error but don't fail enrollment
+      console.error('Billing generation failed:', error);
+    }
+
+    return enrolment;
   }
 
   async validateCreditCap(totalCredits: number, maxCredits: number): Promise<void> {
