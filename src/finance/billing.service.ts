@@ -2,6 +2,8 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { FeeType } from '@prisma/client';
 
+export type EnrolmentAction = 'ENROL' | 'DROP';
+
 @Injectable()
 export class BillingService {
   constructor(private prisma: PrismaService) {}
