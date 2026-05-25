@@ -382,6 +382,8 @@ model CourseOffering {
   examResults ExamResult[]
   timetableSlots TimetableSlot[]
   examTimetableSlots ExamTimetableSlot[]
+  schedule   CourseOfferingSchedule?
+  mergeSessions MergeSession[]
 
   @@unique([courseId, semesterId])
   @@map("course_offerings")
