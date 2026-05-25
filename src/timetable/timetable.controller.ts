@@ -3,6 +3,7 @@ import { TimetableService } from './timetable.service';
 import { CreateSemesterDto } from './dto/create-semester.dto';
 import { CreateCourseOfferingDto } from './dto/create-course-offering.dto';
 import { CreateTimetableSlotDto } from './dto/create-timetable-slot.dto';
+import { SolveTimetableDto } from './dto/solve-timetable.dto';
 
 @Controller('timetable')
 export class TimetableController {
@@ -39,5 +40,15 @@ export class TimetableController {
   @Post('validate-credits/:semesterId')
   validateSemesterCredits(@Param('semesterId') semesterId: string) {
     return this.timetableService.validateSemesterCreditLimits(semesterId);
+  }
+
+  @Post('solve')
+  solveTimetable(@Body() dto: SolveTimetableDto) {
+    return this.timetableService.solveTimetable(dto);
+  }
+
+  @Post('merge')
+  mergeCourses(@Body() body: { courseAId: string; courseBId: string; semesterId: string }) {
+    return this.timetableService.mergeCourses(body);
   }
 }
