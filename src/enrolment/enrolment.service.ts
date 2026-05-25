@@ -24,7 +24,10 @@ export interface AiImpactPreview {
 
 @Injectable()
 export class EnrolmentService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private billingService: BillingService,
+  ) {}
 
   async enrolCourse(dto: EnrolCourseDto) {
     const { studentId, courseOfferingId, sectionCode } = dto;
