@@ -1,11 +1,15 @@
 import { Controller, Post, Get, Param, Body } from '@nestjs/common';
 import { HrService } from './hr.service';
+import { StaffProfileService } from './staff-profile.service';
 import { CreateLecturerDto } from './dto/create-lecturer.dto';
 import { SetAvailabilityDto } from './dto/set-availability.dto';
 
 @Controller('hr')
 export class HrController {
-  constructor(private service: HrService) {}
+  constructor(
+    private service: HrService,
+    private staffProfileService: StaffProfileService,
+  ) {}
 
   @Post('lecturers')
   createLecturer(@Body() dto: CreateLecturerDto) {
@@ -40,5 +44,21 @@ export class HrController {
   @Get('availability/:lecturerId/:semesterId')
   getLecturerAvailability(@Param('lecturerId') lecturerId: string, @Param('semesterId') semesterId: string) {
     return this.service.getLecturerAvailability(lecturerId, semesterId);
+  }
+
+  // Staff Profile endpoints
+  @Post('staff-profiles')
+  createStaffProfile(@Body() dto: any) {
+    return this.staffProfileService.createStaffProfile(dto);
+  }
+
+  @Get('staff-profiles')
+  getAllStaffProfiles() {
+    return this.staffProfileService.getAllStaffProfiles();
+  }
+
+  @Get('staff-profiles/:id')
+  getStaffProfile(@Param('id') id: string) {
+    return this.staffProfileService.getStaffProfile(id);
   }
 }
