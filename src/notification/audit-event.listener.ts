@@ -150,8 +150,8 @@ export class AuditEventListener {
           body,
         },
       })
-    } catch (error) {
-      this.logger.error(`Failed to send notification: ${error.message}`)
+    } catch (error: any) {
+      this.logger.error(`Failed to send notification: ${error?.message || 'Unknown error'}`)
     }
   }
 }
