@@ -1017,6 +1017,7 @@ model Transaction {
   id          String   @id @default(cuid())
   invoiceId   String
   studentId   String
+  semesterId  String
   amount      Float
   type        TransactionType
   method      PaymentMethod
@@ -1028,6 +1029,7 @@ model Transaction {
 
   invoice Invoice @relation(fields: [invoiceId], references: [id])
   student Student @relation(fields: [studentId], references: [id])
+  semester Semester @relation(fields: [semesterId], references: [id])
 
   @@map("transactions")
 }
