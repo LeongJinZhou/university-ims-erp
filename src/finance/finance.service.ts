@@ -47,11 +47,17 @@ export class FinanceService {
 
     const totalAmount = (feeStructure.amount * totalCredits) + retakeFees + overloadAppealFees;
 
+    // Generate invoice number
+    const invoiceCount = await this.prisma.invoice.count();
+    const invoiceNumber = `INV-${new Date().getFullYear()}-${String(invoiceCount + 1).padStart(4, '0')}`;
+
     const invoice = await this.prisma.invoice.create({
       data: {
         studentId,
         semesterId,
+        invoiceNumber,
         totalAmount,
+        paidAmount: 0,
         balance: totalAmount,
         dueDate: dueDate ? new Date(dueDate) : this.getDefaultDueDate(),
         fees: {
