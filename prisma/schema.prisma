@@ -590,9 +590,59 @@ model ExamResult {
   student       Student        @relation(fields: [studentId], references: [id])
   courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id])
   course        Course         @relation(fields: [courseId], references: [id])
+  gradeRecord   Grade?
 
   @@unique([studentId, courseOfferingId])
   @@map("exam_results")
+}
+
+// M06: Grade model for official academic record
+model Grade {
+  id              String   @id @default(cuid())
+  studentId       String
+  courseId        String
+  examResultId    String   @unique
+  attemptNumber   Int      @default(1)
+  grade           String   // e.g., "A", "B+", "F"
+  gradePoint      Float
+  creditHours     Int
+  isRetakeAttempt Boolean  @default(false)
+  recordedAt      DateTime @default(now())
+  recordedBy      String   // Exam Division user ID
+
+  student   Student   @relation(fields: [studentId], references: [id])
+  course    Course    @relation(fields: [courseId], references: [id])
+  examResult ExamResult @relation(fields: [examResultId], references: [id])
+
+  @@index([studentId, courseId])
+  @@map("grades")
+}
+
+// M06: RetakeBacklog for tracking failed subjects that need retake
+model RetakeBacklog {
+  id                String   @id @default(cuid())
+  studentId         String
+  courseId          String
+  courseCode        String
+  creditHours       Int
+  failedSemester    String   // Calendar semester when failed (e.g., "2026-S2")
+  failedAt          DateTime @default(now())
+  status            RetakeStatus @default(PENDING)
+  scheduledSemester String?  // Calendar semester when scheduled (e.g., "2027-S1")
+  scheduledInPlanId String?  // Reference to PlannedCourse when scheduled
+
+  student   Student   @relation(fields: [studentId], references: [id])
+  course    Course    @relation(fields: [courseId], references: [id])
+
+  @@unique([studentId, courseId, failedSemester])
+  @@map("retake_backlog")
+}
+
+enum RetakeStatus {
+  PENDING     // Failed, needs to be scheduled
+  SCHEDULED   // Assigned to a semester plan
+  COMPLETED   // Successfully retaken
+  EXEMPTED    // Waived via appeal
 }
 
 model RetakePlan {
