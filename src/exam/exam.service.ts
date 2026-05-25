@@ -17,8 +17,9 @@ export class ExamService {
   constructor(private prisma: PrismaService) {}
 
   private getSemesterType(calendarSemester: string): SemesterType {
-    const [year, month] = calendarSemester.split('-').map(Number);
-    if (month >= 11 || month <= 4) return 'LONG';
+    const [year, semesterCode] = calendarSemester.split('-');
+    const semesterNum = parseInt(semesterCode.replace('S', ''));
+    if (semesterNum === 1 || semesterNum === 2) return 'LONG';
     return 'SHORT';
   }
 
@@ -26,26 +27,30 @@ export class ExamService {
     return semesterType === 'LONG' ? 20 : 10;
   }
 
-  private getCalendarSemesterLabel(year: number, month: number): string {
-    return `${year}-${String(month).padStart(2, '0')}`;
+  private getCalendarSemesterLabel(year: number, semesterNum: number): string {
+    return `${year}-S${semesterNum}`;
   }
 
   private calculateNextSemester(intakeAnchor: string, currentSemester: number): {
     year: number;
-    month: number;
+    semesterNum: number;
     semesterType: SemesterType;
     maxCredits: number;
   } {
-    const intakeMonth = parseInt(intakeAnchor.substring(4, 6));
-    const semesterOffset = currentSemester;
-    const currentMonth = ((intakeMonth - 1 + semesterOffset * 4) % 12) + 1;
-    const yearOffset = Math.floor((intakeMonth - 1 + semesterOffset * 4) / 12);
-    const year = parseInt(intakeAnchor.substring(0, 4)) + yearOffset;
+    const startYear = parseInt(intakeAnchor.substring(0, 4));
+    const startSemester = parseInt(intakeAnchor.substring(4, 6).replace('S', ''));
 
-    const semesterType = this.getSemesterType(`${year}${String(currentMonth).padStart(2, '0')}`);
+    const totalSemesters = (currentSemester - 1) + (startSemester - 1);
+    const yearOffset = Math.floor(totalSemesters / 3);
+    const semesterOffset = totalSemesters % 3;
+
+    const year = startYear + yearOffset;
+    const semesterNum = semesterOffset + 1;
+
+    const semesterType = this.getSemesterType(`${year}-S${semesterNum}`);
     const maxCredits = this.getMaxCredits(semesterType);
 
-    return { year, month: currentMonth, semesterType, maxCredits };
+    return { year, semesterNum, semesterType, maxCredits };
   }
 
   async createRetakePlan(dto: CreateRetakePlanDto) {
@@ -181,12 +186,12 @@ export class ExamService {
 
     while (remainingFailed.length > 0) {
       const semInfo = this.calculateNextSemester(student.intakeAnchor, currentSemesterNum);
-      const semLabel = this.getCalendarSemesterLabel(semInfo.year, semInfo.month);
+      const semLabel = this.getCalendarSemesterLabel(semInfo.year, semInfo.semesterNum);
 
       const plannedSemester = student.academicPlan?.semesters.find((s) => s.semesterNumber === currentSemesterNum);
       const mqaPlannedCourses = (plannedSemester?.plannedCourses || []).filter((pc) => !pc.isRetake);
 
-      const deferrableCourse = this.findDeferrableCourse(mqaPlannedCourses, student.intakeAnchor, currentSemesterNum);
+      const deferrableCourse = await this.findDeferrableCourse(mqaPlannedCourses, student.intakeAnchor, currentSemesterNum);
 
       const retakableCourses = remainingFailed.filter((fc) => fc.creditHours <= semInfo.maxCredits);
       let toRetake: typeof retakableCourses = [];
@@ -232,7 +237,7 @@ export class ExamService {
         const nextSemInfo = this.calculateNextSemester(student.intakeAnchor, currentSemesterNum);
         extensionSemester = {
           semesterNumber: currentSemesterNum,
-          calendarSemester: this.getCalendarSemesterLabel(nextSemInfo.year, nextSemInfo.month),
+          calendarSemester: this.getCalendarSemesterLabel(nextSemInfo.year, nextSemInfo.semesterNum),
           maxCredits: nextSemInfo.maxCredits,
         };
         requiresExtension = true;
@@ -264,32 +269,37 @@ export class ExamService {
     }
   }
 
-  private findDeferrableCourse(
+  private async findDeferrableCourse(
     plannedCourses: { courseId: string; courseCode: string; creditHours: number; isDeferred: boolean; isRetake: boolean }[],
     intakeAnchor: string,
     currentSemester: number,
-  ): { courseId: string; creditHours: number } | null {
+  ): Promise<{ courseId: string; creditHours: number } | null> {
     for (const pc of plannedCourses) {
-      const prereqs = this.getPrerequisites(pc.courseId);
-      const isNeededByOthers = this.isPrerequisiteForFuture(pc.courseId, plannedCourses, currentSemester);
+      const prereqs = await this.getPrerequisites(pc.courseId);
+      const isNeededByOthers = await this.isPrerequisiteForFuture(pc.courseId, plannedCourses);
 
-      if (!isNeededByOthers && prereqs.every((prereq) => this.isPrereqSatisfied(prereq, plannedCourses, currentSemester))) {
+      if (!isNeededByOthers && prereqs.length === 0) {
         return { courseId: pc.courseId, creditHours: pc.creditHours };
       }
     }
     return null;
   }
 
-  private getPrerequisites(courseId: string): string[] {
-    return [];
+  private async getPrerequisites(courseId: string): Promise<string[]> {
+    const prereqs = await this.prisma.prerequisite.findMany({
+      where: { courseId },
+      select: { prerequisiteCourseId: true },
+    });
+    return prereqs.map((p) => p.prerequisiteCourseId);
   }
 
-  private isPrerequisiteForFuture(courseId: string, plannedCourses: { courseId: string }[], currentSemester: number): boolean {
-    return false;
-  }
-
-  private isPrereqSatisfied(prereqId: string, plannedCourses: { courseId: string }[], currentSemester: number): boolean {
-    return true;
+  private async isPrerequisiteForFuture(courseId: string, plannedCourses: { courseId: string }[]): Promise<boolean> {
+    const dependentCourses = await this.prisma.prerequisite.findMany({
+      where: { prerequisiteCourseId: courseId },
+      select: { courseId: true },
+    });
+    const dependentIds = new Set(dependentCourses.map((d) => d.courseId));
+    return plannedCourses.some((pc) => dependentIds.has(pc.courseId));
   }
 
   private async createExtensionSemester(
@@ -320,7 +330,12 @@ export class ExamService {
     });
   }
 
-  async recordExamResult(studentId: string, courseOfferingId: string, grade: string, marks?: number) {
+  async recordExamResult(studentId: string, courseOfferingId: string, grade: string, marks?: number, releasedBy?: string) {
+    const validGrades = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'];
+    if (!validGrades.includes(grade)) {
+      throw new BadRequestException(`Invalid grade: ${grade}`);
+    }
+
     const courseOffering = await this.prisma.courseOffering.findUnique({
       where: { id: courseOfferingId },
       include: { course: true, semester: true },
@@ -342,7 +357,7 @@ export class ExamService {
         gradePoint,
         gradeStatus,
         marks,
-        releasedBy: '',
+        releasedBy: releasedBy || 'system',
       },
     });
 
@@ -356,7 +371,7 @@ export class ExamService {
         gradePoint,
         creditHours: courseOffering.course.creditHours,
         isRetakeAttempt: false,
-        recordedBy: '',
+        recordedBy: releasedBy || 'system',
       },
     });
 
@@ -367,7 +382,7 @@ export class ExamService {
     const gradePoints: Record<string, number> = {
       A: 4.0, 'A-': 3.7, 'B+': 3.3, B: 3.0, 'B-': 2.7, 'C+': 2.3, C: 2.0, 'C-': 1.7, D: 1.0, F: 0.0,
     };
-    return gradePoints[grade] || 0;
+    return gradePoints[grade];
   }
 
   private determineGradeStatus(grade: string): 'PASS' | 'FAIL' | 'INCOMPLETE' | 'WITHDRAWN' {
@@ -412,7 +427,9 @@ export class ExamService {
             },
           },
         },
-        examResults: true,
+        examResults: {
+          include: { course: true },
+        },
         retakeBacklog: true,
         enrolments: {
           include: {
@@ -443,7 +460,7 @@ export class ExamService {
 
     const earnedCredits = student.examResults
       .filter((r) => r.gradeStatus === 'PASS')
-      .reduce((sum, r) => sum + (r.marks || 0), 0);
+      .reduce((sum, r) => sum + (r.course?.creditHours ?? 0), 0);
 
     return {
       studentId: student.studentId,
