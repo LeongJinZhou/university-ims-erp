@@ -18,6 +18,7 @@
   "dependencies": {
     "@nestjs/common": "^11.1.23",
     "@nestjs/core": "^11.1.23",
+    "@nestjs/event-emitter": "^3.1.0",
     "@nestjs/graphql": "^13.4.2",
     "@nestjs/platform-express": "^11.1.23",
     "@prisma/adapter-pg": "^7.8.0",
