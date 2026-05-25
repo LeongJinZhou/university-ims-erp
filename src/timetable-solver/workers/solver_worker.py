@@ -2,7 +2,6 @@ from schemas.timetable import TimetableRequest, TimetableResponse
 from schemas.merge import MergeRequest, MergeResponse
 from models.solver_models import ConstraintConfig
 import uuid
-from datetime import datetime
 
 async def run_timetable_solver(request: TimetableRequest) -> TimetableResponse:
     config = request.constraints or ConstraintConfig()
