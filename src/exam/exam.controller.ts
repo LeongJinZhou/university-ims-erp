@@ -23,9 +23,9 @@ export class ExamController {
 
   @Post('results')
   recordExamResult(
-    @Body() body: { studentId: string; courseOfferingId: string; grade: string; marks?: number },
+    @Body() body: { studentId: string; courseOfferingId: string; grade: string; marks?: number; releasedBy?: string },
   ) {
-    return this.examService.recordExamResult(body.studentId, body.courseOfferingId, body.grade, body.marks);
+    return this.examService.recordExamResult(body.studentId, body.courseOfferingId, body.grade, body.marks, body.releasedBy);
   }
 
   @Get('students/:studentId/graduation-completeness')
