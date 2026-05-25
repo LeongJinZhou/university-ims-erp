@@ -4,13 +4,31 @@ import { CreateRetakePlanDto } from './dto/create-retake-plan.dto';
 
 type SemesterType = 'LONG' | 'SHORT';
 
+interface FailedCourse {
+  courseId: string;
+  courseCode: string;
+  courseName: string;
+  creditHours: number;
+  failedSemester: string;
+}
+
+interface PlannedCourseWithPrereqs {
+  id: string;
+  courseId: string;
+  courseCode: string;
+  creditHours: number;
+  isRetake: boolean;
+  isDeferred: boolean;
+}
+
 @Injectable()
 export class ExamService {
   constructor(private prisma: PrismaService) {}
 
   private getSemesterType(calendarSemester: string): SemesterType {
-    const month = parseInt(calendarSemester.substring(4, 6));
-    return month >= 11 || month <= 4 ? 'LONG' : 'SHORT';
+    const [year, month] = calendarSemester.split('-').map(Number);
+    if (month >= 11 || month <= 4) return 'LONG';
+    return 'SHORT';
   }
 
   private getMaxCredits(semesterType: SemesterType): number {
@@ -47,7 +65,13 @@ export class ExamService {
         academicPlan: {
           include: {
             semesters: {
-              include: { plannedCourses: true },
+              include: {
+                plannedCourses: {
+                  include: {
+                    semesterPlan: true,
+                  },
+                },
+              },
             },
           },
         },
@@ -63,6 +87,8 @@ export class ExamService {
     if (failedCourses.length === 0) {
       throw new BadRequestException('No failed courses to retake');
     }
+
+    await this.updateRetakeBacklog(student.id, failedCourses);
 
     const retakePlan = await this.prisma.retakePlan.create({
       data: {
@@ -94,7 +120,29 @@ export class ExamService {
     return retakePlan;
   }
 
-  private async identifyFailedCourses(studentId: string) {
+  private async updateRetakeBacklog(studentId: string, failedCourses: FailedCourse[]) {
+    for (const fc of failedCourses) {
+      await this.prisma.retakeBacklog.upsert({
+        where: {
+          studentId_courseId_failedSemester: {
+            studentId,
+            courseId: fc.courseId,
+            failedSemester: fc.failedSemester,
+          },
+        },
+        update: { status: 'PENDING' },
+        create: {
+          studentId,
+          courseId: fc.courseId,
+          courseCode: fc.courseCode,
+          creditHours: fc.creditHours,
+          failedSemester: fc.failedSemester,
+        },
+      });
+    }
+  }
+
+  private async identifyFailedCourses(studentId: string): Promise<FailedCourse[]> {
     const results = await this.prisma.examResult.findMany({
       where: { studentId, gradeStatus: 'FAIL' },
       include: { course: true, courseOffering: { include: { semester: true } } },
@@ -118,24 +166,23 @@ export class ExamService {
       academicPlan?: { semesters: { semesterNumber: number; calendarSemester: string; plannedCourses: { courseId: string; isDeferred: boolean }[] }[] };
     },
     retakePlanId: string,
-    failedCourses: { courseId: string; courseCode: string; creditHours: number; failedSemester: string }[],
+    failedCourses: FailedCourse[],
   ) {
-    const nextSemester = this.calculateNextSemester(student.intakeAnchor, student.currentSemester + 1);
     let revisions: { semesterNumber: number; calendarSemester: string; addedCourses: string[]; deferredCourses: string[]; totalCredits: number }[] = [];
 
     let remainingFailed = [...failedCourses];
-    let currentSemester = student.currentSemester + 1;
-    let availableCredits = nextSemester.maxCredits;
+    let currentSemesterNum = student.currentSemester + 1;
+    let requiresExtension = false;
+    let extensionSemester: { semesterNumber: number; calendarSemester: string; maxCredits: number } | null = null;
 
     while (remainingFailed.length > 0) {
-      const semInfo = this.calculateNextSemester(student.intakeAnchor, currentSemester);
-      const semLabel = this.getSemesterLabel(semInfo.year, semInfo.month);
+      const semInfo = this.calculateNextSemester(student.intakeAnchor, currentSemesterNum);
+      const semLabel = this.getCalendarSemesterLabel(semInfo.year, semInfo.month);
 
-      const deferredFromPlan =
-        student.academicPlan?.semesters
-          ?.find((s) => s.semesterNumber === currentSemester)
-          ?.plannedCourses.filter((pc) => pc.isDeferred)
-          .map((pc) => pc.courseId) || [];
+      const plannedSemester = student.academicPlan?.semesters.find((s) => s.semesterNumber === currentSemesterNum);
+      const mqaPlannedCourses = plannedSemester?.plannedCourses.filter((pc) => !pc.isRetake) || [];
+
+      const deferrableCourse = this.findDeferrableCourse(mqaPlannedCourses, student.intakeAnchor, currentSemesterNum);
 
       const retakableCourses = remainingFailed.filter((fc) => fc.creditHours <= semInfo.maxCredits);
       let toRetake: typeof retakableCourses = [];
@@ -150,22 +197,24 @@ export class ExamService {
         }
       }
 
+      let deferredCourses: string[] = [];
+      let deferredCredits = 0;
+      let totalCredits = totalRetakeCredits;
+
+      if (deferrableCourse && remainingFailed.length > 0) {
+        const remainingSpace = semInfo.maxCredits - totalCredits;
+        if (remainingSpace > 0) {
+          deferredCourses = [deferrableCourse.courseId];
+          deferredCredits = deferrableCourse.creditHours;
+          totalCredits += deferredCredits;
+        }
+      }
+
       remainingFailed = remainingFailed.filter((fc) => !toRetake.includes(fc));
 
-      if (toRetake.length > 0 || deferredFromPlan.length > 0) {
-        let totalCredits = totalRetakeCredits;
-        let deferredCourses: string[] = [];
-
-        if (deferredFromPlan.length > 0) {
-          const deferredCredits = await this.getPlannedCredits(deferredFromPlan);
-          if (totalCredits + deferredCredits <= semInfo.maxCredits) {
-            deferredCourses = deferredFromPlan;
-            totalCredits += deferredCredits;
-          }
-        }
-
+      if (toRetake.length > 0 || deferredCourses.length > 0) {
         revisions.push({
-          semesterNumber: currentSemester,
+          semesterNumber: currentSemesterNum,
           calendarSemester: semLabel,
           addedCourses: toRetake.map((c) => c.courseId),
           deferredCourses,
@@ -173,49 +222,96 @@ export class ExamService {
         });
       }
 
-      availableCredits = semInfo.maxCredits;
-      currentSemester++;
+      currentSemesterNum++;
 
-      if (currentSemester > student.programme.maxDurationSemesters) {
-        await this.createExtensionSemester(retakePlanId, remainingFailed, currentSemester, semInfo);
+      if (currentSemesterNum > student.programme.maxDurationSemesters) {
+        const nextSemInfo = this.calculateNextSemester(student.intakeAnchor, currentSemesterNum);
+        extensionSemester = {
+          semesterNumber: currentSemesterNum,
+          calendarSemester: this.getCalendarSemesterLabel(nextSemInfo.year, nextSemInfo.month),
+          maxCredits: nextSemInfo.maxCredits,
+        };
+        requiresExtension = true;
         break;
       }
     }
 
     await this.prisma.retakeSemesterRevision.createMany({
-      data: revisions.map((r) => ({
-        ...r,
-        retakePlanId,
-      })),
+      data: revisions.map((r) => ({ ...r, retakePlanId })),
     });
+
+    if (requiresExtension && extensionSemester && remainingFailed.length > 0) {
+      await this.createExtensionSemester(retakePlanId, remainingFailed, extensionSemester);
+    }
+
+    if (requiresExtension) {
+      await this.prisma.student.update({
+        where: { id: student.id },
+        data: { planStatus: 'EXTENSION_REQUIRED' },
+      });
+    }
+
+    const projectedGraduation = remainingFailed.length > 0 ? extensionSemester?.calendarSemester : revisions[revisions.length - 1]?.calendarSemester;
+    if (projectedGraduation) {
+      await this.prisma.retakePlan.update({
+        where: { id: retakePlanId },
+        data: { projectedGraduation },
+      });
+    }
   }
 
-  private async getPlannedCredits(courseIds: string[]): Promise<number> {
-    const courses = await this.prisma.course.findMany({
-      where: { id: { in: courseIds } },
-      select: { creditHours: true },
-    });
-    return courses.reduce((sum, c) => sum + c.creditHours, 0);
+  private findDeferrableCourse(
+    plannedCourses: PlannedCourseWithPrereqs[],
+    intakeAnchor: string,
+    currentSemester: number,
+  ): { courseId: string; creditHours: number } | null {
+    for (const pc of plannedCourses) {
+      const prereqs = this.getPrerequisites(pc.courseId);
+      const isNeededByOthers = this.isPrerequisiteForFuture(pc.courseId, plannedCourses, currentSemester);
+
+      if (!isNeededByOthers && prereqs.every((prereq) => this.isPrereqSatisfied(prereq, plannedCourses, currentSemester))) {
+        return { courseId: pc.courseId, creditHours: pc.creditHours };
+      }
+    }
+    return null;
   }
 
-  private getSemesterLabel(year: number, month: number): string {
-    return `${year}-${String(month).padStart(2, '0')}`;
+  private getPrerequisites(courseId: string): string[] {
+    return [];
+  }
+
+  private isPrerequisiteForFuture(courseId: string, plannedCourses: PlannedCourseWithPrereqs[], currentSemester: number): boolean {
+    return false;
+  }
+
+  private isPrereqSatisfied(prereqId: string, plannedCourses: PlannedCourseWithPrereqs[], currentSemester: number): boolean {
+    return true;
   }
 
   private async createExtensionSemester(
     retakePlanId: string,
     remainingFailed: { courseId: string; creditHours: number }[],
-    semesterNumber: number,
-    semInfo: { year: number; month: number; maxCredits: number },
+    extSemester: { semesterNumber: number; calendarSemester: string; maxCredits: number },
   ) {
+    const totalCredits = remainingFailed.reduce((sum, c) => sum + c.creditHours, 0);
+
     await this.prisma.retakeSemesterRevision.create({
       data: {
         retakePlanId,
-        semesterNumber,
-        calendarSemester: this.getSemesterLabel(semInfo.year, semInfo.month),
+        semesterNumber: extSemester.semesterNumber,
+        calendarSemester: extSemester.calendarSemester,
         addedCourses: remainingFailed.map((c) => c.courseId),
         deferredCourses: [],
-        totalCredits: remainingFailed.reduce((sum, c) => sum + c.creditHours, 0),
+        totalCredits,
+      },
+    });
+
+    await this.prisma.appeal.create({
+      data: {
+        studentId: (await this.prisma.retakePlan.findUnique({ where: { id: retakePlanId } }))!.studentId,
+        appealType: 'EXTENSION_SEMESTER',
+        semesterId: extSemester.calendarSemester,
+        reason: `Extension semester required to complete ${remainingFailed.length} failed course(s). ${totalCredits} credits scheduled.`,
       },
     });
   }
@@ -223,7 +319,7 @@ export class ExamService {
   async recordExamResult(studentId: string, courseOfferingId: string, grade: string, marks?: number) {
     const courseOffering = await this.prisma.courseOffering.findUnique({
       where: { id: courseOfferingId },
-      include: { course: true },
+      include: { course: true, semester: true },
     });
 
     if (!courseOffering) {
@@ -233,7 +329,7 @@ export class ExamService {
     const gradePoint = this.calculateGradePoint(grade);
     const gradeStatus = this.determineGradeStatus(grade);
 
-    return this.prisma.examResult.create({
+    const examResult = await this.prisma.examResult.create({
       data: {
         studentId,
         courseOfferingId,
@@ -245,6 +341,22 @@ export class ExamService {
         releasedBy: '',
       },
     });
+
+    await this.prisma.grade.create({
+      data: {
+        studentId,
+        courseId: courseOffering.courseId,
+        examResultId: examResult.id,
+        attemptNumber: 1,
+        grade,
+        gradePoint,
+        creditHours: courseOffering.course.creditHours,
+        isRetakeAttempt: false,
+        recordedBy: '',
+      },
+    });
+
+    return examResult;
   }
 
   private calculateGradePoint(grade: string): number {
@@ -272,5 +384,80 @@ export class ExamService {
       where: { studentId },
       include: { failedCourses: true, revisions: true },
     });
+  }
+
+  async getGraduationCompleteness(studentId: string) {
+    const student = await this.prisma.student.findUnique({
+      where: { id: studentId },
+      include: {
+        programme: {
+          include: {
+            versions: {
+              where: { isActive: true },
+              include: {
+                semesterPlans: {
+                  include: {
+                    courses: {
+                      include: {
+                        course: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        examResults: true,
+        retakeBacklog: true,
+        enrolments: {
+          include: {
+            courseOffering: {
+              include: { course: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    const programmeVersion = student.programme.versions[0];
+    const mqaPlan = programmeVersion.semesterPlans;
+    const completedCourses = new Set(student.examResults.filter((r) => r.gradeStatus === 'PASS').map((r) => r.courseId));
+    const failedCourses = new Set(student.examResults.filter((r) => r.gradeStatus === 'FAIL').map((r) => r.courseId));
+    const retakeScheduled = new Set(student.retakeBacklog.filter((r) => r.status === 'SCHEDULED').map((r) => r.courseId));
+
+    const requiredCourses = mqaPlan.flatMap((sp) => sp.courses.map((c) => c.courseId));
+    const missingCourses = requiredCourses.filter((c) => !completedCourses.has(c));
+    const totalRequiredCredits = requiredCourses.reduce((sum, c) => {
+      const course = mqaPlan.flatMap((sp) => sp.courses).find((x) => x.courseId === c)?.course;
+      return sum + (course?.creditHours || 0);
+    }, 0);
+
+    const earnedCredits = student.examResults
+      .filter((r) => r.gradeStatus === 'PASS')
+      .reduce((sum, r) => sum + (r.marks || 0), 0);
+
+    return {
+      studentId: student.studentId,
+      programme: student.programme.name,
+      totalRequiredCredits,
+      earnedCredits,
+      remainingCredits: totalRequiredCredits - earnedCredits,
+      failedCoursesCount: failedCourses.size,
+      retakeScheduledCount: retakeScheduled.size,
+      missingCoursesCount: missingCourses.length,
+      isGraduationReady: missingCourses.length === 0 && student.retakeBacklog.filter((r) => r.status === 'PENDING').length === 0,
+      checklist: {
+        allRequiredCoursesCompleted: missingCourses.length === 0,
+        noPendingRetakes: student.retakeBacklog.filter((r) => r.status === 'PENDING').length === 0,
+        creditsSatisfied: earnedCredits >= totalRequiredCredits,
+        gpaMet: student.cumulativeGpa >= 2.0,
+        noExtensionRequired: student.planStatus !== 'EXTENSION_REQUIRED',
+      },
+    };
   }
 }
