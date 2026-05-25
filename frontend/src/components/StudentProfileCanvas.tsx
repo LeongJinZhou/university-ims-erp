@@ -8,7 +8,6 @@ import type { Student, SemesterPlan, AtRiskFlag } from '../lib/types'
 interface StudentProfileCanvasProps {
   student?: Student
   isLoading?: boolean
-  onRefresh?: () => void
 }
 
 export function StudentProfileCanvas({ student, isLoading = false, onRefresh }: StudentProfileCanvasProps) {
