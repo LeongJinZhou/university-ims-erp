@@ -259,7 +259,7 @@ export class TimetableService {
         code: r.code,
         capacity: r.capacity,
         building: '',
-        floor: r.floor,
+        floor: r.floorPlanX ? 0 : 0,
         equipment: r.equipment?.map(e => e.type) || [],
       })),
       lecturers: await this.prisma.lecturer.findMany({
