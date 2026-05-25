@@ -909,6 +909,38 @@ model Cancellation {
 }
 
 // =============================================
+// M08: Staff Profile (HR Extension)
+// =============================================
+
+model StaffProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  staffId       String   @unique
+  departmentId  String?
+  position      String
+  employmentType EmploymentType @default(FULL_TIME)
+  joinDate      DateTime @default(now())
+  salary        Float?
+  bankAccount   String?
+  emergencyContact String?
+  qualifications String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id])
+  department Department? @relation(fields: [departmentId], references: [id])
+
+  @@map("staff_profiles")
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  TEMPORARY
+}
+
+// =============================================
 // M09: Finance & Fees
 // =============================================
 
