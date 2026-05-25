@@ -19,7 +19,8 @@ function App() {
     <Router>
       <DashboardLayout>
         <Routes>
-          <Route path="/" element={<Navigate to="/programmes" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardView />} />
           <Route path="/programmes" element={<ProgrammeDashboard />} />
           <Route path="/programmes/mqa/:id" element={<MqaPlans />} />
           <Route path="/departments" element={<Departments />} />
