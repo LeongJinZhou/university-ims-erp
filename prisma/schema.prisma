@@ -445,10 +445,12 @@ model Section {
   courseOfferingId String
   sectionCode     String  // e.g., "A", "B"
   combinedHeadcount Int   @default(0)
+  isMerged        Boolean @default(false)
 
   courseOffering  CourseOffering @relation(fields: [courseOfferingId], references: [id])
   timetableSlots TimetableSlot[]
   enrolments     Enrolment[]
+  mergeSessions  MergeSession[]
 
   @@unique([courseOfferingId, sectionCode])
   @@map("sections")
