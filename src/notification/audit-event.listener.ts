@@ -135,8 +135,8 @@ export class AuditEventListener {
         },
       })
       this.logger.log(`Audit trail logged: ${event.action} by user ${event.userId}`)
-    } catch (error) {
-      this.logger.error(`Failed to log audit trail: ${error.message}`)
+    } catch (error: any) {
+      this.logger.error(`Failed to log audit trail: ${error?.message || 'Unknown error'}`)
     }
   }
 
