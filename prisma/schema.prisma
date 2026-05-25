@@ -974,18 +974,72 @@ model Invoice {
   id          String        @id @default(cuid())
   studentId   String
   semesterId  String
+  invoiceNumber String     @unique
   totalAmount Float
   paidAmount  Float         @default(0)
   balance     Float
   status      InvoiceStatus @default(UNPAID)
   dueDate     DateTime
   issuedAt    DateTime      @default(now())
+  generatedBy String?
 
-  student  Student   @relation(fields: [studentId], references: [id])
-  fees     Fee[]
-  payments Payment[]
+  student      Student      @relation(fields: [studentId], references: [id])
+  semester     Semester     @relation(fields: [semesterId], references: [id])
+  fees         Fee[]
+  invoiceItems InvoiceItem[]
+  transactions Transaction[]
 
   @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  description String
+  feeType     FeeType
+  creditHours Int?
+  unitAmount  Float    // Per credit hour rate or fixed amount
+  quantity    Int      @default(1)
+  totalAmount Float
+  referenceId String?  // References courseOfferingId or other entity
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+
+  @@map("invoice_items")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  studentId   String
+  amount      Float
+  type        TransactionType
+  method      PaymentMethod
+  status      TransactionStatus @default(PENDING)
+  reference   String            @unique
+  remarks     String?
+  processedAt DateTime          @default(now())
+  processedBy String?           // User ID
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@map("transactions")
+}
+
+enum TransactionType {
+  PAYMENT
+  REFUND
+  ADJUSTMENT
+  WRITE_OFF
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
 }
 
 enum InvoiceStatus {
