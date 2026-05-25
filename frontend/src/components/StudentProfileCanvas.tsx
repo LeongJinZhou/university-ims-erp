@@ -10,7 +10,7 @@ interface StudentProfileCanvasProps {
   isLoading?: boolean
 }
 
-export function StudentProfileCanvas({ student, isLoading = false, onRefresh }: StudentProfileCanvasProps) {
+export function StudentProfileCanvas({ student, isLoading = false }: StudentProfileCanvasProps) {
   if (isLoading) {
     return <StudentProfileSkeleton />
   }
