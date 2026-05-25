@@ -12,15 +12,6 @@ interface FailedCourse {
   failedSemester: string;
 }
 
-interface PlannedCourseWithPrereqs {
-  id: string;
-  courseId: string;
-  courseCode: string;
-  creditHours: number;
-  isRetake: boolean;
-  isDeferred: boolean;
-}
-
 @Injectable()
 export class ExamService {
   constructor(private prisma: PrismaService) {}
@@ -76,6 +67,7 @@ export class ExamService {
           },
         },
         programme: true,
+        retakeBacklog: true,
       },
     });
 
@@ -163,7 +155,19 @@ export class ExamService {
       currentSemester: number;
       intakeAnchor: string;
       programme: { maxDurationSemesters: number };
-      academicPlan?: { semesters: { semesterNumber: number; calendarSemester: string; plannedCourses: { courseId: string; isDeferred: boolean }[] }[] };
+      academicPlan?: {
+        semesters: {
+          semesterNumber: number;
+          calendarSemester: string;
+          plannedCourses: {
+            courseId: string;
+            courseCode: string;
+            creditHours: number;
+            isDeferred: boolean;
+            isRetake: boolean;
+          }[];
+        }[];
+      };
     },
     retakePlanId: string,
     failedCourses: FailedCourse[],
@@ -180,7 +184,7 @@ export class ExamService {
       const semLabel = this.getCalendarSemesterLabel(semInfo.year, semInfo.month);
 
       const plannedSemester = student.academicPlan?.semesters.find((s) => s.semesterNumber === currentSemesterNum);
-      const mqaPlannedCourses = plannedSemester?.plannedCourses.filter((pc) => !pc.isRetake) || [];
+      const mqaPlannedCourses = (plannedSemester?.plannedCourses || []).filter((pc) => !pc.isRetake);
 
       const deferrableCourse = this.findDeferrableCourse(mqaPlannedCourses, student.intakeAnchor, currentSemesterNum);
 
@@ -261,7 +265,7 @@ export class ExamService {
   }
 
   private findDeferrableCourse(
-    plannedCourses: PlannedCourseWithPrereqs[],
+    plannedCourses: { courseId: string; courseCode: string; creditHours: number; isDeferred: boolean; isRetake: boolean }[],
     intakeAnchor: string,
     currentSemester: number,
   ): { courseId: string; creditHours: number } | null {
@@ -280,11 +284,11 @@ export class ExamService {
     return [];
   }
 
-  private isPrerequisiteForFuture(courseId: string, plannedCourses: PlannedCourseWithPrereqs[], currentSemester: number): boolean {
+  private isPrerequisiteForFuture(courseId: string, plannedCourses: { courseId: string }[], currentSemester: number): boolean {
     return false;
   }
 
-  private isPrereqSatisfied(prereqId: string, plannedCourses: PlannedCourseWithPrereqs[], currentSemester: number): boolean {
+  private isPrereqSatisfied(prereqId: string, plannedCourses: { courseId: string }[], currentSemester: number): boolean {
     return true;
   }
 
@@ -428,7 +432,7 @@ export class ExamService {
     const mqaPlan = programmeVersion.semesterPlans;
     const completedCourses = new Set(student.examResults.filter((r) => r.gradeStatus === 'PASS').map((r) => r.courseId));
     const failedCourses = new Set(student.examResults.filter((r) => r.gradeStatus === 'FAIL').map((r) => r.courseId));
-    const retakeScheduled = new Set(student.retakeBacklog.filter((r) => r.status === 'SCHEDULED').map((r) => r.courseId));
+    const retakeScheduled = new Set((student.retakeBacklog || []).filter((r) => r.status === 'SCHEDULED').map((r) => r.courseId));
 
     const requiredCourses = mqaPlan.flatMap((sp) => sp.courses.map((c) => c.courseId));
     const missingCourses = requiredCourses.filter((c) => !completedCourses.has(c));
@@ -450,10 +454,10 @@ export class ExamService {
       failedCoursesCount: failedCourses.size,
       retakeScheduledCount: retakeScheduled.size,
       missingCoursesCount: missingCourses.length,
-      isGraduationReady: missingCourses.length === 0 && student.retakeBacklog.filter((r) => r.status === 'PENDING').length === 0,
+      isGraduationReady: missingCourses.length === 0 && (student.retakeBacklog || []).filter((r) => r.status === 'PENDING').length === 0,
       checklist: {
         allRequiredCoursesCompleted: missingCourses.length === 0,
-        noPendingRetakes: student.retakeBacklog.filter((r) => r.status === 'PENDING').length === 0,
+        noPendingRetakes: (student.retakeBacklog || []).filter((r) => r.status === 'PENDING').length === 0,
         creditsSatisfied: earnedCredits >= totalRequiredCredits,
         gpaMet: student.cumulativeGpa >= 2.0,
         noExtensionRequired: student.planStatus !== 'EXTENSION_REQUIRED',
