@@ -32,19 +32,24 @@ type Slot = {
   lecturer: string
 }
 
+const timetableApi = {
+  getAll: () => request('/timetable/slots'),
+  create: (data: any) => post('/timetable/slots', data),
+}
+
 export function TimetableDashboard() {
   const { data: slots, isLoading, error } = useQuery({
     queryKey: ['slots'],
     queryFn: async () => {
-      const { data } = await courseApi.getAll()
-      return data?.map((c: any) => ({
-        id: c.id,
-        course: c.code,
-        venue: c.venue,
-        day: c.day,
-        start: c.startTime,
-        end: c.endTime,
-        lecturer: c.lecturer,
+      const { data } = await timetableApi.getAll()
+      return data?.map((s: any) => ({
+        id: s.id,
+        course: s.courseOffering?.course?.code || '',
+        venue: s.venue?.code || '',
+        day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'][s.dayOfWeek] || '',
+        start: s.startTime || '',
+        end: s.endTime || '',
+        lecturer: s.courseOffering?.lecturer?.user?.name || '',
       })) || []
     },
   })
