@@ -398,6 +398,12 @@ export class ExamService {
     });
   }
 
+  async getAllRetakePlans() {
+    return this.prisma.retakePlan.findMany({
+      include: { failedCourses: true, revisions: true },
+    });
+  }
+
   async getStudentRetakePlans(studentId: string) {
     return this.prisma.retakePlan.findMany({
       where: { studentId },
