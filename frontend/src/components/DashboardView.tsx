@@ -7,7 +7,7 @@ import { studentApi } from '../lib/api'
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
 
 export function DashboardView() {
-  const { data: students, isLoading } = useQuery({
+  const { data: students, isLoading, error } = useQuery({
     queryKey: ['dashboard-students'],
     queryFn: async () => {
       const { data } = await studentApi.getAll()
@@ -16,6 +16,7 @@ export function DashboardView() {
   })
 
   if (isLoading) return <DashboardSkeleton />
+  if (error) return <div className="p-6 text-red-600">Error loading dashboard data</div>
 
   const gpaDistribution = [
     { range: '4.0-3.5', count: 0 },
