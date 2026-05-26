@@ -9,6 +9,11 @@ import { SolveTimetableDto } from './dto/solve-timetable.dto';
 export class TimetableController {
   constructor(private readonly timetableService: TimetableService) {}
 
+  @Get('slots')
+  getAllSlots() {
+    return this.timetableService.getAllSlots();
+  }
+
   @Post('semesters')
   createSemester(@Body() dto: CreateSemesterDto) {
     return this.timetableService.createSemester(dto);
