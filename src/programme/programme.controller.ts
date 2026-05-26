@@ -10,6 +10,11 @@ import { CreateMqaSemesterPlanDto } from './dto/create-semester-plan.dto';
 export class ProgrammeController {
   constructor(private readonly programmeService: ProgrammeService) {}
 
+  @Get()
+  getAllProgrammes() {
+    return this.programmeService.getAllProgrammes();
+  }
+
   @Post('departments')
   createDepartment(@Body() dto: CreateDepartmentDto) {
     return this.programmeService.createDepartment(dto);
