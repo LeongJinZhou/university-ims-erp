@@ -7,6 +7,11 @@ import { CreateDropRequestDto } from './dto/create-drop-request.dto';
 export class EnrolmentController {
   constructor(private service: EnrolmentService) {}
 
+  @Get('enrolments')
+  getAllEnrolments() {
+    return this.service.getAllEnrolments();
+  }
+
   @Post('enrol')
   enrolCourse(@Body() dto: EnrolCourseDto) {
     return this.service.enrolCourse(dto);
