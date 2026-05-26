@@ -18,6 +18,10 @@ export interface ReplacementSlot {
 export class VenueService {
   constructor(private prisma: PrismaService) {}
 
+  async getAllVenues() {
+    return this.prisma.venue.findMany({ include: { rooms: true } });
+  }
+
   async createVenue(dto: CreateVenueDto) {
     return this.prisma.venue.create({ data: dto });
   }
