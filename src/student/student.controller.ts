@@ -6,6 +6,11 @@ import { CreateStudentDto } from './dto/create-student.dto';
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
+  @Get()
+  getAllStudents() {
+    return this.studentService.getAllStudents();
+  }
+
   @Post()
   createStudent(@Body() dto: CreateStudentDto) {
     return this.studentService.createStudent(dto);
