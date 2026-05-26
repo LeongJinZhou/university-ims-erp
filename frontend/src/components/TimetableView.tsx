@@ -80,7 +80,7 @@ export function TimetableView() {
           <Card className="border border-slate-200 dark:border-slate-800">
             <CardHeader>
               <CardTitle>Venues</CardTitle>
-              <CardDescription>{venuesLoading ? 'Loading...' : `${venues?.data?.length || 0} venues`}</CardDescription>
+              <CardDescription>{venuesLoading ? 'Loading...' : `${venues?.length || 0} venues`}</CardDescription>
             </CardHeader>
             <CardContent className="max-h-96 overflow-y-auto">
               {venuesLoading ? (
