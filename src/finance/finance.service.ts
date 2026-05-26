@@ -167,9 +167,15 @@ export class FinanceService {
   }
 
   async getStudentInvoices(studentId: string) {
+    if (studentId) {
+      return this.prisma.invoice.findMany({
+        where: { studentId },
+        include: { fees: true, payments: true },
+        orderBy: { issuedAt: 'desc' },
+      });
+    }
     return this.prisma.invoice.findMany({
-      where: { studentId },
-      include: { fees: true, payments: true },
+      include: { fees: true, payments: true, student: { include: { user: true } } },
       orderBy: { issuedAt: 'desc' },
     });
   }
