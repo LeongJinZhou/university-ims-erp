@@ -10,6 +10,12 @@ import { CreateMqaSemesterPlanDto } from './dto/create-semester-plan.dto';
 export class ProgrammeService {
   constructor(private prisma: PrismaService) {}
 
+  async getAllProgrammes() {
+    return this.prisma.programme.findMany({
+      include: { faculty: true, versions: true },
+    });
+  }
+
   async createDepartment(dto: CreateDepartmentDto) {
     const existing = await this.prisma.department.findUnique({ where: { code: dto.code } });
     if (existing) throw new ConflictException('Department code already exists');
