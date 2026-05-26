@@ -29,6 +29,17 @@ export class EnrolmentService {
     private billingService: BillingService,
   ) {}
 
+  async getAllEnrolments() {
+    return this.prisma.enrolment.findMany({
+      where: { isDropped: false },
+      include: {
+        student: { include: { user: true } },
+        courseOffering: { include: { course: true, semester: true } },
+        section: true,
+      },
+    });
+  }
+
   async enrolCourse(dto: EnrolCourseDto) {
     const { studentId, courseOfferingId, sectionCode } = dto;
 
