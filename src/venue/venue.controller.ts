@@ -8,6 +8,11 @@ import { CreateRoomBookingDto } from './dto/create-room-booking.dto';
 export class VenueController {
   constructor(private readonly venueService: VenueService) {}
 
+  @Get('venues')
+  getAllVenues() {
+    return this.venueService.getAllVenues();
+  }
+
   @Post('venues')
   createVenue(@Body() dto: CreateVenueDto) {
     return this.venueService.createVenue(dto);
