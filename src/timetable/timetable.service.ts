@@ -9,6 +9,15 @@ import { ApprovalState, SemesterType } from '@prisma/client';
 export class TimetableService {
   constructor(private prisma: PrismaService) {}
 
+  async getAllSlots() {
+    return this.prisma.timetableSlot.findMany({
+      include: {
+        courseOffering: { include: { course: true, lecturer: { include: { user: true } } } },
+        venue: true,
+      },
+    });
+  }
+
   async createSemester(dto: CreateSemesterDto) {
     return this.prisma.semester.create({
       data: {
