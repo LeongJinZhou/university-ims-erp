@@ -91,7 +91,7 @@ export function TimetableView() {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {venues?.data?.map((venue: any) => (
+                  {venues?.map((venue: any) => (
                     <div key={venue.id} className="p-3 border border-slate-200 dark:border-slate-800 rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
