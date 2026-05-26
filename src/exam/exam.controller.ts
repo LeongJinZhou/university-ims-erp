@@ -6,6 +6,11 @@ import { CreateRetakePlanDto } from './dto/create-retake-plan.dto';
 export class ExamController {
   constructor(private readonly examService: ExamService) {}
 
+  @Get('retake-plans')
+  getAllRetakePlans() {
+    return this.examService.getAllRetakePlans();
+  }
+
   @Post('retake-plans')
   createRetakePlan(@Body() dto: CreateRetakePlanDto) {
     return this.examService.createRetakePlan(dto);
