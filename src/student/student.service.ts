@@ -41,6 +41,15 @@ type SemesterType = 'LONG' | 'SHORT';
 export class StudentService {
   constructor(private prisma: PrismaService) {}
 
+  async getAllStudents() {
+    return this.prisma.student.findMany({
+      include: {
+        user: true,
+        programme: true,
+      },
+    });
+  }
+
   private getSemesterType(calendarSemester: string): SemesterType {
     const month = parseInt(calendarSemester.substring(4, 6));
     if (month >= 11 || month <= 4) return 'LONG';
