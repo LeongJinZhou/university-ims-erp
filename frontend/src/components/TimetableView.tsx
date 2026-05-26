@@ -14,7 +14,10 @@ export function TimetableView() {
 
   const { data: venues, isLoading: venuesLoading } = useQuery({
     queryKey: ['venues'],
-    queryFn: () => venueApi.getAll(),
+    queryFn: async () => {
+      const { data } = await venueApi.getAll()
+      return data
+    },
   })
 
   const renderGrid = () => {
